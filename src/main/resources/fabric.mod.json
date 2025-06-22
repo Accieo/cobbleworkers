@@ -1,0 +1,53 @@
+{
+	"schemaVersion": 1,
+	"id": "cobbleworkers",
+	"version": "${version}",
+	"name": "cobbleworkers",
+	"description": "Pasture block can now be used as a utility block that gives Pokémon jobs!",
+	"authors": [
+		"Accieo"
+	],
+	"contact": {
+		"sources": "https://github.com/accieo/cobbleworkers"
+	},
+	"license": "MPL-2.0",
+	"icon": "assets/cobbleworkers/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "accieo.cobbleworkers.Cobbleworkers",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "accieo.cobbleworkers.CobbleworkersClient",
+				"adapter": "kotlin"
+			}
+		],
+		"modmenu": [
+			{
+				"value": "accieo.cobbleworkers.config.CobbleworkersModMenu",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"cobbleworkers.mixins.json",
+		{
+			"config": "cobbleworkers.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

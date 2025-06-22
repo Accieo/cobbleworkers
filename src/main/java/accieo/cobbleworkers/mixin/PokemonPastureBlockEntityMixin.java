@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.mixin;
 
 import accieo.cobbleworkers.Cobbleworkers;
+import accieo.cobbleworkers.jobs.WorkerDispatcher;
 import com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -34,9 +35,7 @@ public class PokemonPastureBlockEntityMixin {
 				if (pokemonEntity == null) return;
 
 				try {
-					// TODO: Switch case with jobs and checking from config suitable pokémon
-					// TODO: Ensure that this also works in multiple-languages
-					pokemonEntity.getPokemon().getDisplayName();
+					WorkerDispatcher.INSTANCE.tickAll(world, blockPos, pokemonEntity);
 				} catch (Exception e) {
 					Cobbleworkers.logger.error("[Cobbleworkers]: Error while processing pasture mixin");
 				}

@@ -8,19 +8,27 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
+import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.block.ApricornBlock
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
 import net.minecraft.world.World
-import kotlin.math.abs
 
 object ApricornHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        TODO("Not yet implemented")
+        val bugTypeEnabled = CobbleworkersConfigHolder.config.bugTypeHarvestsApricorns
+        val isBugType = pokemonEntity.pokemon.types.any { it == ElementalTypes.BUG }
+        val isApricornHarvester = CobbleworkersConfigHolder.config.apricornHarvesters
+            .map { it.lowercase() }
+            .contains(pokemonEntity.pokemon.species.translatedName.string.lowercase())
+
+        return (bugTypeEnabled && isBugType) || isApricornHarvester
     }
 
     override fun tick(
@@ -55,9 +63,10 @@ object ApricornHarvester : Worker {
         }
 
         if (closestPos != null) {
-            val closeInX = abs(pokemonEntity.x - closestPos.x) <= 1.5
-            val closeInZ = abs(pokemonEntity.z - closestPos.z) <= 1.5
-            if (closeInX && closeInZ) {
+            val buffer = 1.0
+            val apricornHitbox = Box(closestPos).expand(buffer)
+            // TODO: Pokémon that cannot fly can't reach the ones above (it's a feature *cough*)
+            if (pokemonEntity.boundingBox.intersects(apricornHitbox)) {
                 val apricorn = world.getBlockState(closestPos)
                 if (apricorn.isIn(apricornsTag)) {
                     world.breakBlock(closestPos, true, pokemonEntity)

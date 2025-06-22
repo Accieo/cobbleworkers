@@ -13,5 +13,6 @@ import me.shedaniel.autoconfig.annotation.Config
 
 @Config(name = "cobbleworkers")
 class CobbleworkersConfig : ConfigData {
-    var apricornHarvesters: MutableList<String> = mutableListOf("meowth", "pikachu")
+    var bugTypeHarvestsApricorns = true
+    var apricornHarvesters: MutableList<String> = mutableListOf("")
 }

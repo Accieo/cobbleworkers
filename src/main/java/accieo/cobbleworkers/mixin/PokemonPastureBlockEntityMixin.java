@@ -38,6 +38,7 @@ public class PokemonPastureBlockEntityMixin {
 					WorkerDispatcher.INSTANCE.tickAll(world, blockPos, pokemonEntity);
 				} catch (Exception e) {
 					Cobbleworkers.logger.error("[Cobbleworkers]: Error while processing pasture mixin");
+					Cobbleworkers.logger.error(e.getMessage());
 				}
 			}
 		});

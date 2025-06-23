@@ -8,6 +8,10 @@
 
 package accieo.cobbleworkers
 
+import accieo.cobbleworkers.config.CobbleworkersConfig
+import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import me.shedaniel.autoconfig.AutoConfig
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer
 import net.fabricmc.api.ModInitializer
 import org.slf4j.LoggerFactory
 
@@ -16,6 +20,8 @@ object Cobbleworkers : ModInitializer {
     val logger = LoggerFactory.getLogger("cobbleworkers")
 
 	override fun onInitialize() {
-		//
+		val configHolder = AutoConfig.register(CobbleworkersConfig::class.java, ::GsonConfigSerializer)
+
+		CobbleworkersConfigHolder.config = configHolder.get()
 	}
 }

@@ -13,6 +13,7 @@ import accieo.cobbleworkers.interfaces.Worker
 import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.block.ApricornBlock
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
+import net.minecraft.block.BlockState
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.util.Identifier
@@ -22,6 +23,8 @@ import net.minecraft.world.World
 
 object ApricornHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
+        if (!CobbleworkersConfigHolder.config.apricornHarvestersEnabled) return false
+
         val bugTypeEnabled = CobbleworkersConfigHolder.config.bugTypeHarvestsApricorns
         val isBugType = pokemonEntity.pokemon.types.any { it == ElementalTypes.BUG }
         val isApricornHarvester = CobbleworkersConfigHolder.config.apricornHarvesters
@@ -65,11 +68,13 @@ object ApricornHarvester : Worker {
         if (closestPos != null) {
             val buffer = 1.0
             val apricornHitbox = Box(closestPos).expand(buffer)
-            // TODO: Pokémon that cannot fly can't reach the ones above (it's a feature *cough*)
+
             if (pokemonEntity.boundingBox.intersects(apricornHitbox)) {
                 val apricorn = world.getBlockState(closestPos)
                 if (apricorn.isIn(apricornsTag)) {
-                    world.breakBlock(closestPos, true, pokemonEntity)
+                    val apricornBlock = apricorn.block as ApricornBlock
+                    val newState = apricornBlock.harvest(world, apricorn, closestPos)
+                    world.setBlockState(closestPos, newState, 3)
                 }
                 return
             }

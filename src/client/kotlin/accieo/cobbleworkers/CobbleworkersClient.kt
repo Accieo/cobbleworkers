@@ -8,16 +8,10 @@
 
 package accieo.cobbleworkers
 
-import accieo.cobbleworkers.config.CobbleworkersConfig
-import accieo.cobbleworkers.config.CobbleworkersConfigHolder
-import me.shedaniel.autoconfig.AutoConfig
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer
 import net.fabricmc.api.ClientModInitializer
 
 object CobbleworkersClient : ClientModInitializer {
 	override fun onInitializeClient() {
-		val configHolder = AutoConfig.register(CobbleworkersConfig::class.java, ::GsonConfigSerializer)
-
-		CobbleworkersConfigHolder.config = configHolder.get()
+		// Client stuff
 	}
 }

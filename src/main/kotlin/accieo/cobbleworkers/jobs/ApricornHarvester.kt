@@ -26,6 +26,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
+import java.util.UUID
 
 /**
  * A worker job for a Pokémon to find, navigate to, and harvest mature apricorns.
@@ -37,12 +38,11 @@ object ApricornHarvester : Worker {
     private const val NAVIGATION_SPEED = 1.0
     private const val INTERACTION_BOX_OFFSET = 1.0
     private val APRICORNS_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of("cobblemon", "apricorns"))
+    private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
 
     /**
      * Determines if Pokémon is eligible to be an apricorn harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
-     *
-     * @return True if Pokémon is eligible, false otherwise.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         val config = CobbleworkersConfigHolder.config
@@ -53,10 +53,25 @@ object ApricornHarvester : Worker {
 
     /**
      * Main logic loop for the apricorn harvester, executed each tick.
+     * Delegates to state handlers handleHarvesting and handleDepositing
+     * to manage the current task of the Pokémon.
      *
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+        val heldItems = heldItemsByPokemon[pokemonEntity.uuid]
+
+        if (heldItems.isNullOrEmpty()) {
+            handleHarvesting(world, origin, pokemonEntity)
+        } else {
+            handleDepositing(world, origin, pokemonEntity, heldItems)
+        }
+    }
+
+    /**
+     * Handles logic for finding and harvesting an apricorn when the Pokémon is not holding items.
+     */
+    private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val targetPos = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
 
         if (isPokemonAtPosition(pokemonEntity, targetPos)) {
@@ -67,10 +82,29 @@ object ApricornHarvester : Worker {
     }
 
     /**
+     * Handles logic for finding and depositing items into an inventory when the Pokémon is holding items.
+     */
+    private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
+        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, SEARCH_RADIUS)
+
+        if (inventoryPos == null) {
+            storeOrDropStacks(world, null, pokemonEntity.blockPos, itemsToDeposit)
+            heldItemsByPokemon.remove(pokemonEntity.uuid)
+            return
+        }
+
+        if (isPokemonAtPosition(pokemonEntity, inventoryPos)) {
+            val inventory = inventoryPos.let { world.getBlockEntity(it) as? Inventory }
+            storeOrDropStacks(world, inventory, pokemonEntity.blockPos, itemsToDeposit)
+            heldItemsByPokemon.remove(pokemonEntity.uuid)
+        } else {
+            navigateTo(pokemonEntity, inventoryPos)
+        }
+    }
+
+    /**
      * Checks if the Pokémon qualifies as a harvester because it's a bug type
      * and bug type harvesting is enabled via config.
-     *
-     * @return True if bug type and bug type allowed, false otherwise.
      */
     private fun isAllowedByBugType(pokemonEntity: PokemonEntity): Boolean {
         val config = CobbleworkersConfigHolder.config
@@ -80,8 +114,6 @@ object ApricornHarvester : Worker {
     /**
      * Checks if the Pokémon qualifies as a harvester because its species is
      * explicitly listed in the config.
-     *
-     * @return True if is qualified harvester, false otherwise.
      */
     private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
         val config = CobbleworkersConfigHolder.config
@@ -91,8 +123,6 @@ object ApricornHarvester : Worker {
 
     /**
      * Scans the pasture's block surrounding area for the closest mature apricorn.
-     *
-     * @return BlockPos of the closest harvestable apricorn, or null if none are found.
      */
     private fun findClosestReadyApricorn(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
         var closestPos: BlockPos? = null
@@ -116,8 +146,6 @@ object ApricornHarvester : Worker {
 
     /**
      * Checks if the Pokémon's bounding box intersects with the target block area.
-     *
-     * @return True if Pokémon's bounding box intersects, false otherwise.
      */
     private fun isPokemonAtPosition(pokemonEntity: PokemonEntity, targetPos: BlockPos): Boolean {
         val interactionHitbox = Box(targetPos).expand(INTERACTION_BOX_OFFSET)
@@ -152,7 +180,9 @@ object ApricornHarvester : Worker {
 
         val drops = apricornState.getDroppedStacks(lootParams)
 
-        storeOrDropStacks(world, origin, apricornPos, drops)
+        if (drops.isNotEmpty()) {
+            heldItemsByPokemon[pokemonEntity.uuid] = drops
+        }
 
         world.setBlockState(apricornPos, apricornState.with(ApricornBlock.AGE, 0), Block.NOTIFY_ALL)
     }
@@ -161,12 +191,8 @@ object ApricornHarvester : Worker {
      * Attempts to store a list of ItemStacks in the nearest inventory.
      * Any stacks that cannot be fully stored are dropped in the world.
      */
-    private fun storeOrDropStacks(world: World, origin: BlockPos, dropPos: BlockPos, drops: List<ItemStack>) {
-        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, SEARCH_RADIUS)
-        val inventory = inventoryPos?.let { world.getBlockEntity(it) as? Inventory }
-
+    private fun storeOrDropStacks(world: World, inventory: Inventory?, dropPos: BlockPos, drops: List<ItemStack>) {
         if (inventory != null) {
-            // TODO: Make the Pokémon navigate towards the inventory before inserting
             val remainingDrops = drops.mapNotNull { stack ->
                 val remainingStack = CobbleworkersInventoryUtils.insertStack(inventory, stack)
                 if (!remainingStack.isEmpty) remainingStack else null

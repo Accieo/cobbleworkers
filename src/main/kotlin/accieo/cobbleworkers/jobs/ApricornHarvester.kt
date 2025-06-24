@@ -53,6 +53,8 @@ object ApricornHarvester : Worker {
 
     /**
      * Main logic loop for the apricorn harvester, executed each tick.
+     *
+     * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(
         world: World,

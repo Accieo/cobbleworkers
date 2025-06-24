@@ -56,11 +56,7 @@ object ApricornHarvester : Worker {
      *
      * NOTE: Origin refers to the pasture's block position.
      */
-    override fun tick(
-        world: World,
-        origin: BlockPos,
-        pokemonEntity: PokemonEntity
-    ) {
+    override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val targetPos = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
 
         if (isPokemonAtPosition(pokemonEntity, targetPos)) {

@@ -8,6 +8,7 @@
 
 package accieo.cobbleworkers.utilities
 
+import com.cobblemon.mod.common.CobblemonBlocks
 import net.minecraft.block.Blocks
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.inventory.Inventory
@@ -19,11 +20,21 @@ object CobbleworkersInventoryUtils {
     fun findClosestInventory(world: World, origin: BlockPos, radius: Int): BlockPos? {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
+        val validBlocks = arrayOf(
+            Blocks.CHEST,
+            Blocks.BARREL,
+            CobblemonBlocks.GILDED_CHEST,
+            CobblemonBlocks.BLUE_GILDED_CHEST,
+            CobblemonBlocks.PINK_GILDED_CHEST,
+            CobblemonBlocks.BLACK_GILDED_CHEST,
+            CobblemonBlocks.WHITE_GILDED_CHEST,
+            CobblemonBlocks.GREEN_GILDED_CHEST,
+            CobblemonBlocks.YELLOW_GILDED_CHEST,
+        )
 
         BlockPos.stream(origin.add(-radius, -5, -radius), origin.add(radius, 5, radius)).forEach { pos ->
             val block = world.getBlockState(pos).block
-            // TODO: Add cobblemon gilded chests
-            if (block == Blocks.CHEST || block == Blocks.BARREL) {
+            if (validBlocks.contains(block)) {
                 val blockEntity: BlockEntity? = world.getBlockEntity(pos)
                 if (blockEntity is Inventory) {
                     val distance = origin.getSquaredDistance(pos)

@@ -76,37 +76,32 @@ object ApricornHarvester : Worker {
             if (pokemonEntity.boundingBox.intersects(apricornHitbox)) {
                 val apricorn = world.getBlockState(closestPos)
                 if (apricorn.isIn(apricornsTag)) {
-                    // TODO: Attemp to abstract this or parts of this to re-use for CropHarvester and BerryHarvester!
-                    // 1. Create loot context
                     val lootContextBuilder = LootContextParameterSet.Builder(world as ServerWorld)
                         .add(LootContextParameters.ORIGIN, closestPos.toCenterPos())
                         .add(LootContextParameters.BLOCK_STATE, apricorn)
                         .add(LootContextParameters.TOOL, ItemStack.EMPTY)
                         .addOptional(LootContextParameters.THIS_ENTITY, pokemonEntity)
-                    // 2. Get actual drops
+
                     val drops: List<ItemStack> = apricorn.getDroppedStacks(lootContextBuilder)
-                    // 3. Find nearby inventory
+
                     val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, radius)
                     if (inventoryPos != null) {
                         val remainingDrops = mutableListOf<ItemStack>()
                         val inventoryBlockEntity = world.getBlockEntity(inventoryPos)
 
-                        // TODO: Make pokémon navigate to inventory before inserting
-                        // 4. Try to add drops to inventory
                         drops.forEach { stack ->
                             val remainingStack = CobbleworkersInventoryUtils.insertStack(inventoryBlockEntity as Inventory, stack)
                             if (!remainingStack.isEmpty) {
                                 remainingDrops.add(remainingStack)
                             }
                         }
-                        // 5. Drop what didn't fit
+
                         remainingDrops.forEach { stack ->
                             Block.dropStack(world, closestPos, stack)
                         }
-                        // 6. Set state of the block
+
                         world.setBlockState(closestPos, apricorn.with(ApricornBlock.AGE, 0), 3)
                     } else {
-                        // No inventory found, just drop them
                         drops.forEach { stack ->
                             Block.dropStack(world, closestPos, stack)
                         }

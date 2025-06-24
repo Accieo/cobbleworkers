@@ -32,6 +32,7 @@ object CobbleworkersInventoryUtils {
             CobblemonBlocks.YELLOW_GILDED_CHEST,
         )
 
+        // TODO: Update to check closest AVAILABLE inventory, better gameplay
         BlockPos.stream(origin.add(-radius, -5, -radius), origin.add(radius, 5, radius)).forEach { pos ->
             val block = world.getBlockState(pos).block
             if (validBlocks.contains(block)) {

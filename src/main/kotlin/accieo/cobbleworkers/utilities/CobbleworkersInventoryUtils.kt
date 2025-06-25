@@ -35,6 +35,7 @@ object CobbleworkersInventoryUtils {
         // TODO: Update to check closest AVAILABLE inventory, better gameplay
         BlockPos.stream(origin.add(-radius, -5, -radius), origin.add(radius, 5, radius)).forEach { pos ->
             val block = world.getBlockState(pos).block
+            // TODO: Re-check this
             if (validBlocks.contains(block)) {
                 val blockEntity: BlockEntity? = world.getBlockEntity(pos)
                 if (blockEntity is Inventory) {
@@ -50,6 +51,7 @@ object CobbleworkersInventoryUtils {
         return closestPos
     }
 
+    // TODO: Optimize this
     fun insertStack(inventory: Inventory, stack: ItemStack): ItemStack {
         if (stack.isEmpty) {
             return ItemStack.EMPTY

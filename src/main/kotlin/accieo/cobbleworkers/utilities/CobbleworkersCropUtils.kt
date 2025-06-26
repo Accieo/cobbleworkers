@@ -30,7 +30,7 @@ object CobbleworkersCropUtils {
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
             val block = state.block
-            if (block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 3) {
+            if (block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 2) {
                 val distanceSq = origin.getSquaredDistance(pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq

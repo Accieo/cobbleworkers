@@ -55,12 +55,12 @@ object CropIrrigator : Worker {
 
         CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestFarmland)
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             val farmland = world.getBlockState(currentTarget)
             world.setBlockState(
                currentTarget,
                farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
-               Block.NOTIFY_ALL
+               Block.NOTIFY_LISTENERS
             )
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }

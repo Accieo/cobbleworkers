@@ -42,14 +42,27 @@ object CropIrrigator : Worker {
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, SEARCH_RADIUS)
-        if (closestFarmland == null) return
+        val pokemonId = pokemonEntity.uuid
+        val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, SEARCH_RADIUS) ?: return
+        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestFarmland)) {
-            val farmland = world.getBlockState(closestFarmland)
-            world.setBlockState(closestFarmland, farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE), Block.NOTIFY_ALL)
-        } else {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestFarmland)
+        if (currentTarget == null || currentTarget != closestFarmland) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestFarmland)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFarmland)
+            }
+            return
+        }
+
+        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestFarmland)
+
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
+            val farmland = world.getBlockState(currentTarget)
+            world.setBlockState(
+               currentTarget,
+               farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
+               Block.NOTIFY_ALL
+            )
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
     }
 

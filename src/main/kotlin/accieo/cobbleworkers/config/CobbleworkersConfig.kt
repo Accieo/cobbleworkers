@@ -13,7 +13,12 @@ import me.shedaniel.autoconfig.annotation.Config
 
 @Config(name = "cobbleworkers")
 class CobbleworkersConfig : ConfigData {
+    // Apricorn harvesting
     var apricornHarvestersEnabled = true
     var bugTypeHarvestsApricorns = true
-    var apricornHarvesters: MutableList<String> = mutableListOf("")
+    var apricornHarvesters: MutableList<String> = mutableListOf("dragonite")
+    // Crop irrigation
+    var cropIrrigatorsEnabled = true
+    var waterTypeIrrigateCrops = true
+    var cropIrrigators: MutableList<String> = mutableListOf("dragonite")
 }

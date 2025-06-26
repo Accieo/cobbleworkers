@@ -11,6 +11,7 @@ package accieo.cobbleworkers.jobs
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
+import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.block.ApricornBlock
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
@@ -35,8 +36,6 @@ import java.util.UUID
 object ApricornHarvester : Worker {
     private const val SEARCH_RADIUS = 8
     private const val VERTICAL_SEARCH_RANGE = 5
-    private const val NAVIGATION_SPEED = 1.0
-    private const val INTERACTION_BOX_OFFSET = 1.0
     private val APRICORNS_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of("cobblemon", "apricorns"))
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
@@ -76,10 +75,10 @@ object ApricornHarvester : Worker {
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val targetPos = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
 
-        if (isPokemonAtPosition(pokemonEntity, targetPos)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, targetPos)) {
             harvestApricorn(world, targetPos, origin, pokemonEntity)
         } else {
-            navigateTo(pokemonEntity, targetPos)
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, targetPos)
         }
     }
 
@@ -99,7 +98,7 @@ object ApricornHarvester : Worker {
             return
         }
 
-        if (isPokemonAtPosition(pokemonEntity, inventoryPos)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos)) {
             val inventory = world.getBlockEntity(inventoryPos) as? Inventory
             if (inventory == null) {
                 // Block not an inventory, mark it as failed
@@ -121,7 +120,7 @@ object ApricornHarvester : Worker {
                 failedDepositLocations.remove(pokemonEntity.uuid)
             }
         } else {
-            navigateTo(pokemonEntity, inventoryPos)
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, inventoryPos)
         }
     }
 
@@ -165,26 +164,6 @@ object ApricornHarvester : Worker {
         }
 
         return closestPos
-    }
-
-    /**
-     * Checks if the Pokémon's bounding box intersects with the target block area.
-     */
-    private fun isPokemonAtPosition(pokemonEntity: PokemonEntity, targetPos: BlockPos): Boolean {
-        val interactionHitbox = Box(targetPos).expand(INTERACTION_BOX_OFFSET)
-        return pokemonEntity.boundingBox.intersects(interactionHitbox)
-    }
-
-    /**
-     * Commands the Pokémon entity to move towards the target destination.
-     */
-    private fun navigateTo(pokemonEntity: PokemonEntity, targetPos: BlockPos) {
-        pokemonEntity.navigation.startMovingTo(
-            targetPos.x + 0.5,
-            targetPos.y.toDouble(),
-            targetPos.z + 0.5,
-            NAVIGATION_SPEED
-        )
     }
 
     /**

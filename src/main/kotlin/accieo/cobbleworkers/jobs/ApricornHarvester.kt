@@ -39,6 +39,7 @@ object ApricornHarvester : Worker {
     private const val INTERACTION_BOX_OFFSET = 1.0
     private val APRICORNS_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of("cobblemon", "apricorns"))
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
+    private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
 
     /**
      * Determines if Pokémon is eligible to be an apricorn harvester.
@@ -62,6 +63,7 @@ object ApricornHarvester : Worker {
         val heldItems = heldItemsByPokemon[pokemonEntity.uuid]
 
         if (heldItems.isNullOrEmpty()) {
+            failedDepositLocations.remove(pokemonEntity.uuid)
             handleHarvesting(world, origin, pokemonEntity)
         } else {
             handleDepositing(world, origin, pokemonEntity, heldItems)
@@ -83,20 +85,41 @@ object ApricornHarvester : Worker {
 
     /**
      * Handles logic for finding and depositing items into an inventory when the Pokémon is holding items.
+     * It will try multiple inventories nearby iteratively
      */
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
-        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, SEARCH_RADIUS)
+        val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
+        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, SEARCH_RADIUS, VERTICAL_SEARCH_RANGE, triedPositions)
 
         if (inventoryPos == null) {
-            storeOrDropStacks(world, null, pokemonEntity.blockPos, itemsToDeposit)
+            // No (untried) inventories found, so we just drop the remaining items and reset.
+            itemsToDeposit.forEach { stack -> Block.dropStack(world, pokemonEntity.blockPos, stack) }
             heldItemsByPokemon.remove(pokemonEntity.uuid)
+            failedDepositLocations.remove(pokemonEntity.uuid)
             return
         }
 
         if (isPokemonAtPosition(pokemonEntity, inventoryPos)) {
-            val inventory = inventoryPos.let { world.getBlockEntity(it) as? Inventory }
-            storeOrDropStacks(world, inventory, pokemonEntity.blockPos, itemsToDeposit)
-            heldItemsByPokemon.remove(pokemonEntity.uuid)
+            val inventory = world.getBlockEntity(inventoryPos) as? Inventory
+            if (inventory == null) {
+                // Block not an inventory, mark it as failed
+                triedPositions.add(inventoryPos)
+                return
+            }
+
+            val remainingDrops = CobbleworkersInventoryUtils.insertStacks(inventory, itemsToDeposit)
+
+            if (remainingDrops.size == itemsToDeposit.size) {
+                //  No change in stack size, so mark as failed
+                triedPositions.add(inventoryPos)
+            }
+
+            if (remainingDrops.isNotEmpty()) {
+                heldItemsByPokemon[pokemonEntity.uuid] = remainingDrops
+            } else {
+                heldItemsByPokemon.remove(pokemonEntity.uuid)
+                failedDepositLocations.remove(pokemonEntity.uuid)
+            }
         } else {
             navigateTo(pokemonEntity, inventoryPos)
         }
@@ -185,23 +208,5 @@ object ApricornHarvester : Worker {
         }
 
         world.setBlockState(apricornPos, apricornState.with(ApricornBlock.AGE, 0), Block.NOTIFY_ALL)
-    }
-
-    /**
-     * Attempts to store a list of ItemStacks in the nearest inventory.
-     * Any stacks that cannot be fully stored are dropped in the world.
-     */
-    private fun storeOrDropStacks(world: World, inventory: Inventory?, dropPos: BlockPos, drops: List<ItemStack>) {
-        if (inventory != null) {
-            val remainingDrops = drops.mapNotNull { stack ->
-                val remainingStack = CobbleworkersInventoryUtils.insertStack(inventory, stack)
-                if (!remainingStack.isEmpty) remainingStack else null
-            }
-
-            remainingDrops.forEach { stack -> Block.dropStack(world, dropPos, stack) }
-        } else {
-            // No inventory was found, drop all items at the given location
-            drops.forEach { stack -> Block.dropStack(world, dropPos, stack) }
-        }
     }
 }

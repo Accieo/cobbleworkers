@@ -13,6 +13,7 @@ import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.inventory.Inventory
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
@@ -21,6 +22,7 @@ import net.minecraft.world.World
 object CobbleworkersInventoryUtils {
     private val VALID_INVENTORY_BLOCKS: Set<Block> = setOf(
         Blocks.CHEST,
+        Blocks.TRAPPED_CHEST,
         Blocks.BARREL,
         CobblemonBlocks.GILDED_CHEST,
         CobblemonBlocks.BLUE_GILDED_CHEST,
@@ -31,21 +33,26 @@ object CobbleworkersInventoryUtils {
         CobblemonBlocks.YELLOW_GILDED_CHEST,
     )
 
-    @Deprecated("Old ugly version, should use findClosestAvailableInventory after fixing it")
-    fun findClosestInventory(world: World, origin: BlockPos, radius: Int): BlockPos? {
+    /**
+     * Finds closest inventory
+     */
+    fun findClosestInventory(world: World, origin: BlockPos, searchRadius: Int, verticalRange: Int, ignorePos: Set<BlockPos> = emptySet()): BlockPos? {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
 
-        BlockPos.stream(origin.add(-radius, -5, -radius), origin.add(radius, 5, radius)).forEach { pos ->
+        val searchArea = Box(origin).expand(searchRadius.toDouble(), verticalRange.toDouble(), searchRadius.toDouble())
+        BlockPos.stream(searchArea).forEach { pos ->
+            if (pos in ignorePos) {
+                return@forEach
+            }
+
             val block = world.getBlockState(pos).block
-            if (block in VALID_INVENTORY_BLOCKS) {
-                val blockEntity: BlockEntity? = world.getBlockEntity(pos)
-                if (blockEntity is Inventory) {
-                    val distance = origin.getSquaredDistance(pos)
-                    if (distance < closestDistance) {
-                        closestDistance = distance
-                        closestPos = pos.toImmutable()
-                    }
+            val blockEntity = world.getBlockEntity(pos)
+            if (block in VALID_INVENTORY_BLOCKS && blockEntity is Inventory) {
+                val distanceSq = origin.getSquaredDistance(pos)
+                if (distanceSq < closestDistance) {
+                    closestDistance = distanceSq
+                    closestPos = pos.toImmutable()
                 }
             }
         }
@@ -54,34 +61,18 @@ object CobbleworkersInventoryUtils {
     }
 
     /**
-     * Finds closest inventory nearby with enough space to insert items
+     * Inserts a list of ItemStack into an inventory, returning the remainder
      */
-    // TODO: Fix so it can handle stacks correctly.
-    fun findClosestAvailableInventory(world: World, origin: BlockPos, stacks: List<ItemStack>, searchRadius: Int, verticalRange: Int): BlockPos? {
-        if (stacks.isEmpty()) {
-            return null
-        }
-
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), verticalRange.toDouble(), searchRadius.toDouble())
-        BlockPos.stream(searchArea).forEach { pos ->
-            val blockState = world.getBlockState(pos)
-            val blockEntity = world.getBlockEntity(pos)
-
-            if (blockState.block in VALID_INVENTORY_BLOCKS && blockEntity is Inventory) {
-                if (hasAvailableSlot(blockEntity, stacks)) {
-                    val distanceSq = origin.getSquaredDistance(pos)
-                    if (distanceSq < closestDistance) {
-                        closestDistance = distanceSq
-                        closestPos = pos.toImmutable()
-                    }
-                }
+    fun insertStacks(inventory: Inventory, stacks: List<ItemStack>): List<ItemStack> {
+        val remainingDrops = mutableListOf<ItemStack>()
+        stacks.forEach { stack ->
+            val remaining = insertStack(inventory, stack.copy())
+            if (!remaining.isEmpty) {
+                remainingDrops.add(remaining)
             }
         }
 
-        return closestPos
+        return remainingDrops
     }
 
     /**
@@ -100,31 +91,6 @@ object CobbleworkersInventoryUtils {
         }
 
         return remainingStack
-    }
-
-    /**
-     * Checks if an inventory has any space for a given item.
-     */
-    // TODO: Fix this to handle stacks correctly
-    private fun hasAvailableSlot(inventory: Inventory, stacks: List<ItemStack>): Boolean {
-        for (stack in stacks) {
-            for (i in 0 until inventory.size()) {
-                val slotStack = inventory.getStack(i)
-
-                if (slotStack.isEmpty) {
-                    return true
-                }
-
-                val isSameItem = ItemStack.areItemsAndComponentsEqual(slotStack, stack)
-                val hasSpace = slotStack.count < slotStack.maxCount
-
-                if (isSameItem && hasSpace) {
-                    return true
-                }
-            }
-        }
-
-        return false
     }
 
     /**

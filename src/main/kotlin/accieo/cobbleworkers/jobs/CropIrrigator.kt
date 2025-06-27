@@ -72,7 +72,7 @@ object CropIrrigator : Worker {
      */
     private fun isAllowedByWaterType(pokemonEntity: PokemonEntity): Boolean {
         val config = CobbleworkersConfigHolder.config
-        return config.waterTypeIrrigateCrops && pokemonEntity.pokemon.types.any { it == ElementalTypes.WATER }
+        return config.waterTypeIrrigatesCrops && pokemonEntity.pokemon.types.any { it == ElementalTypes.WATER }
     }
 
     /**

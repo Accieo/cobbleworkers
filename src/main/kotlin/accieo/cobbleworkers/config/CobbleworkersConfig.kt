@@ -19,6 +19,6 @@ class CobbleworkersConfig : ConfigData {
     var apricornHarvesters: MutableList<String> = mutableListOf("dragonite")
     // Crop irrigation
     var cropIrrigatorsEnabled = true
-    var waterTypeIrrigateCrops = true
+    var waterTypeIrrigatesCrops = true
     var cropIrrigators: MutableList<String> = mutableListOf("dragonite")
 }

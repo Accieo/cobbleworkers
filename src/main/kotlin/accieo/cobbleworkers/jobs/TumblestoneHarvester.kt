@@ -12,12 +12,9 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
-import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonBlocks
-import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
-import com.cobblemon.mod.common.item.CobblemonItem
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.inventory.Inventory
@@ -27,7 +24,6 @@ import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
-import net.minecraft.util.math.Direction
 import net.minecraft.world.World
 import java.util.UUID
 
@@ -89,7 +85,7 @@ object TumblestoneHarvester : Worker {
             return
         }
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 2.0)) {
             val inventory = world.getBlockEntity(inventoryPos) as? Inventory
             if (inventory == null) {
                 // Block not an inventory, mark it as failed
@@ -123,7 +119,7 @@ object TumblestoneHarvester : Worker {
         val closestTumblestone = findClosestTumblestone(world, origin, pokemonEntity) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
-        if (currentTarget == null || currentTarget != closestTumblestone) {
+        if (currentTarget == null) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestTumblestone)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestTumblestone)
             }
@@ -132,7 +128,7 @@ object TumblestoneHarvester : Worker {
 
         CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestTumblestone)
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             harvestTumblestone(world, closestTumblestone, pokemonEntity)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }

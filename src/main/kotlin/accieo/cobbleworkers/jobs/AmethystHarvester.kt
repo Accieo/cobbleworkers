@@ -84,7 +84,7 @@ object AmethystHarvester : Worker {
             return
         }
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 2.0)) {
             val inventory = world.getBlockEntity(inventoryPos) as? Inventory
             if (inventory == null) {
                 // Block not an inventory, mark it as failed
@@ -118,7 +118,7 @@ object AmethystHarvester : Worker {
         val closestAmethyst = findClosestAmethystCluster(world, origin, pokemonEntity) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
-        if (currentTarget == null || currentTarget != closestAmethyst) {
+        if (currentTarget == null) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestAmethyst)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestAmethyst)
             }
@@ -127,7 +127,7 @@ object AmethystHarvester : Worker {
 
         CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestAmethyst)
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             harvestAmethystCluster(world, closestAmethyst, pokemonEntity)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }

@@ -85,7 +85,7 @@ object ApricornHarvester : Worker {
             return
         }
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 2.0)) {
             val inventory = world.getBlockEntity(inventoryPos) as? Inventory
             if (inventory == null) {
                 // Block not an inventory, mark it as failed
@@ -119,7 +119,7 @@ object ApricornHarvester : Worker {
         val closestApricorn = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
-        if (currentTarget == null || currentTarget != closestApricorn) {
+        if (currentTarget == null) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestApricorn)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestApricorn)
             }

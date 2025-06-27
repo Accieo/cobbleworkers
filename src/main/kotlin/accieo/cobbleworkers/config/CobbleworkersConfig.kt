@@ -21,8 +21,12 @@ class CobbleworkersConfig : ConfigData {
     var cropIrrigatorsEnabled = true
     var waterTypeIrrigatesCrops = true
     var cropIrrigators: MutableList<String> = mutableListOf("dragonite")
-    // Amethyst harvester
+    // Amethyst harvesting
     var amethystHarvestersEnabled = true
     var rockTypeHarvestsAmethyst = true
     var amethystHarvesters: MutableList<String> = mutableListOf("machop", "machoke", "machamp")
+    // Tumblestone harvesting
+    var tumblestoneHarvestersEnabled = true
+    var steelTypeHarvestsTumblestone = true
+    var tumblestoneHarvesters: MutableList<String> = mutableListOf("machop", "machoke", "machamp")
 }

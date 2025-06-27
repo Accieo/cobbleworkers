@@ -38,7 +38,7 @@ object AmethystHarvester : Worker {
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
 
     /**
-     * Determines if Pokémon is eligible to be an apricorn harvester.
+     * Determines if Pokémon is eligible to be an amethyst harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {

@@ -29,4 +29,8 @@ class CobbleworkersConfig : ConfigData {
     var tumblestoneHarvestersEnabled = true
     var steelTypeHarvestsTumblestone = true
     var tumblestoneHarvesters: MutableList<String> = mutableListOf("machop", "machoke", "machamp")
+    // Crop harvesting
+    var cropHarvestersEnabled = true
+    var grassTypeHarvestsCrops = true
+    var cropHarvesters: MutableList<String> = mutableListOf("umbreon")
 }

@@ -17,7 +17,8 @@ object WorkerDispatcher {
         ApricornHarvester,
         AmethystHarvester,
         TumblestoneHarvester,
-        CropIrrigator
+        CropIrrigator,
+        CropHarvester
     )
 
     fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {

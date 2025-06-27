@@ -115,12 +115,22 @@ object ApricornHarvester : Worker {
      * Handles logic for finding and harvesting an apricorn when the Pokémon is not holding items.
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val targetPos = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
+        val pokemonId = pokemonEntity.uuid
+        val closestApricorn = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
+        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, targetPos)) {
-            harvestApricorn(world, targetPos, pokemonEntity)
-        } else {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, targetPos)
+        if (currentTarget == null || currentTarget != closestApricorn) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestApricorn)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestApricorn)
+            }
+            return
+        }
+
+        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestApricorn)
+
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
+            harvestApricorn(world, closestApricorn, pokemonEntity)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
     }
 

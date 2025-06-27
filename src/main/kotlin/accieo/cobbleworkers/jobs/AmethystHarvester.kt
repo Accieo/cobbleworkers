@@ -114,12 +114,22 @@ object AmethystHarvester : Worker {
      * Handles logic for finding and harvesting an amethyst cluster when the Pokémon is not holding items.
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val targetPos = findClosestAmethystCluster(world, origin, pokemonEntity) ?: return
+        val pokemonId = pokemonEntity.uuid
+        val closestAmethyst = findClosestAmethystCluster(world, origin, pokemonEntity) ?: return
+        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, targetPos)) {
-            harvestAmethystCluster(world, targetPos, pokemonEntity)
-        } else {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, targetPos)
+        if (currentTarget == null || currentTarget != closestAmethyst) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestAmethyst)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestAmethyst)
+            }
+            return
+        }
+
+        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestAmethyst)
+
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
+            harvestAmethystCluster(world, closestAmethyst, pokemonEntity)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
     }
 

@@ -11,9 +11,7 @@ package accieo.cobbleworkers.utilities
 import com.cobblemon.mod.common.CobblemonBlocks
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
-import net.minecraft.block.entity.BlockEntity
 import net.minecraft.inventory.Inventory
-import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box

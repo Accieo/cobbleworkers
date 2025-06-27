@@ -15,7 +15,8 @@ import net.minecraft.world.World
 object WorkerDispatcher {
     private val workers = listOf(
         ApricornHarvester,
-        CropIrrigator
+        CropIrrigator,
+        AmethystHarvester
     )
 
     fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {

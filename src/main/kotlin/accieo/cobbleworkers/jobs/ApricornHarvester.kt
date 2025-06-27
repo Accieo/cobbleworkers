@@ -70,19 +70,6 @@ object ApricornHarvester : Worker {
     }
 
     /**
-     * Handles logic for finding and harvesting an apricorn when the Pokémon is not holding items.
-     */
-    private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val targetPos = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
-
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, targetPos)) {
-            harvestApricorn(world, targetPos, origin, pokemonEntity)
-        } else {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, targetPos)
-        }
-    }
-
-    /**
      * Handles logic for finding and depositing items into an inventory when the Pokémon is holding items.
      * It will try multiple inventories nearby iteratively
      */
@@ -125,22 +112,16 @@ object ApricornHarvester : Worker {
     }
 
     /**
-     * Checks if the Pokémon qualifies as a harvester because it's a bug type
-     * and bug type harvesting is enabled via config.
+     * Handles logic for finding and harvesting an apricorn when the Pokémon is not holding items.
      */
-    private fun isAllowedByBugType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
-        return config.bugTypeHarvestsApricorns && pokemonEntity.pokemon.types.any { it == ElementalTypes.BUG }
-    }
+    private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+        val targetPos = findClosestReadyApricorn(world, origin, pokemonEntity) ?: return
 
-    /**
-     * Checks if the Pokémon qualifies as a harvester because its species is
-     * explicitly listed in the config.
-     */
-    private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
-        val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
-        return config.apricornHarvesters.any { it.lowercase() == speciesName }
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, targetPos)) {
+            harvestApricorn(world, targetPos, pokemonEntity)
+        } else {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, targetPos)
+        }
     }
 
     /**
@@ -169,7 +150,7 @@ object ApricornHarvester : Worker {
     /**
      * Executes the complete harvesting process for a single apricorn block
      */
-    private fun harvestApricorn(world: World, apricornPos: BlockPos, origin: BlockPos, pokemonEntity: PokemonEntity) {
+    private fun harvestApricorn(world: World, apricornPos: BlockPos, pokemonEntity: PokemonEntity) {
         val apricornState = world.getBlockState(apricornPos)
 
         if (!apricornState.isIn(APRICORNS_TAG)) return
@@ -187,5 +168,24 @@ object ApricornHarvester : Worker {
         }
 
         world.setBlockState(apricornPos, apricornState.with(ApricornBlock.AGE, 0), Block.NOTIFY_ALL)
+    }
+
+    /**
+     * Checks if the Pokémon qualifies as a harvester because it's a bug type
+     * and bug type harvesting is enabled via config.
+     */
+    private fun isAllowedByBugType(pokemonEntity: PokemonEntity): Boolean {
+        val config = CobbleworkersConfigHolder.config
+        return config.bugTypeHarvestsApricorns && pokemonEntity.pokemon.types.any { it == ElementalTypes.BUG }
+    }
+
+    /**
+     * Checks if the Pokémon qualifies as a harvester because its species is
+     * explicitly listed in the config.
+     */
+    private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
+        val config = CobbleworkersConfigHolder.config
+        val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
+        return config.apricornHarvesters.any { it.lowercase() == speciesName }
     }
 }

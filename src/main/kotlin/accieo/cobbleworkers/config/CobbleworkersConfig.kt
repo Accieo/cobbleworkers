@@ -37,4 +37,8 @@ class CobbleworkersConfig : ConfigData {
     var berryHarvestersEnabled = true
     var grassTypeHarvestsBerries = true
     var berryHarvesters: MutableList<String> = mutableListOf("umbreon")
+    // Honey collectors
+    var honeyCollectorsEnabled = true
+    var combeeLineCollectsHoney = true
+    var honeyCollectors: MutableList<String> = mutableListOf("ninjask")
 }

@@ -33,4 +33,8 @@ class CobbleworkersConfig : ConfigData {
     var cropHarvestersEnabled = true
     var grassTypeHarvestsCrops = true
     var cropHarvesters: MutableList<String> = mutableListOf("umbreon")
+    // Berry harvesting
+    var berryHarvestersEnabled = true
+    var grassTypeHarvestsBerries = true
+    var berryHarvesters: MutableList<String> = mutableListOf("umbreon")
 }

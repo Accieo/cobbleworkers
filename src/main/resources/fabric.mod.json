@@ -8,6 +8,7 @@
 		"Accieo"
 	],
 	"contact": {
+		"issues": "https://github.com/Accieo/cobbleworkers/issues",
 		"sources": "https://github.com/accieo/cobbleworkers"
 	},
 	"license": "MPL-2.0",

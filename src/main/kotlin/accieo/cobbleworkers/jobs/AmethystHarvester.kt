@@ -36,13 +36,13 @@ object AmethystHarvester : Worker {
     private const val VERTICAL_SEARCH_RANGE = 5
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+    private val config = CobbleworkersConfigHolder.config.amethyst
 
     /**
      * Determines if Pokémon is eligible to be an amethyst harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.amethystHarvestersEnabled) return false
 
         return isAllowedByRockType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
@@ -125,7 +125,9 @@ object AmethystHarvester : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestAmethyst)
+        if (currentTarget == closestAmethyst) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestAmethyst)
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             harvestAmethystCluster(world, closestAmethyst, pokemonEntity)
@@ -183,7 +185,6 @@ object AmethystHarvester : Worker {
      * and rock type harvesting is enabled via config.
      */
     private fun isAllowedByRockType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         return config.rockTypeHarvestsAmethyst && pokemonEntity.pokemon.types.any { it == ElementalTypes.ROCK }
     }
 
@@ -192,7 +193,6 @@ object AmethystHarvester : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.amethystHarvesters.any { it.lowercase() == speciesName }
     }

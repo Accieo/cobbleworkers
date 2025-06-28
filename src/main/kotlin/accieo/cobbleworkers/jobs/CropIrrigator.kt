@@ -24,13 +24,13 @@ import net.minecraft.world.World
  */
 object CropIrrigator : Worker {
     private const val SEARCH_RADIUS = 8
+    private val config = CobbleworkersConfigHolder.config.irrigation
 
     /**
      * Determines if Pokémon is eligible to be a crop irrigator.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.cropIrrigatorsEnabled) return false
 
         return isAllowedByWaterType(pokemonEntity) || isDesignatedIrrigator(pokemonEntity)
@@ -53,7 +53,9 @@ object CropIrrigator : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestFarmland)
+        if (currentTarget == closestFarmland) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestFarmland)
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             val farmland = world.getBlockState(currentTarget)
@@ -71,7 +73,6 @@ object CropIrrigator : Worker {
      * and water type irrigator is enabled via config.
      */
     private fun isAllowedByWaterType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         return config.waterTypeIrrigatesCrops && pokemonEntity.pokemon.types.any { it == ElementalTypes.WATER }
     }
 
@@ -80,7 +81,6 @@ object CropIrrigator : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedIrrigator(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.cropIrrigators.any { it.lowercase() == speciesName }
     }

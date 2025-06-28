@@ -39,13 +39,13 @@ object ApricornHarvester : Worker {
     private val APRICORNS_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of("cobblemon", "apricorns"))
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+    private val config = CobbleworkersConfigHolder.config.apricorn
 
     /**
      * Determines if Pokémon is eligible to be an apricorn harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.apricornHarvestersEnabled) return false
 
         return isAllowedByBugType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
@@ -126,7 +126,9 @@ object ApricornHarvester : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestApricorn)
+        if (currentTarget == closestApricorn) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestApricorn)
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestApricorn(world, closestApricorn, pokemonEntity)
@@ -185,7 +187,6 @@ object ApricornHarvester : Worker {
      * and bug type harvesting is enabled via config.
      */
     private fun isAllowedByBugType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         return config.bugTypeHarvestsApricorns && pokemonEntity.pokemon.types.any { it == ElementalTypes.BUG }
     }
 
@@ -194,7 +195,6 @@ object ApricornHarvester : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.apricornHarvesters.any { it.lowercase() == speciesName }
     }

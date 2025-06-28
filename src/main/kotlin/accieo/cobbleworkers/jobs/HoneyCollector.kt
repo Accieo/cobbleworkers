@@ -37,13 +37,13 @@ object HoneyCollector : Worker {
     private val VALID_SPECIES: Set<String> = setOf("combee", "vespiquen")
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+    private val config = CobbleworkersConfigHolder.config.honey
 
     /**
      * Determines if Pokémon is eligible to be a honey collector.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.honeyCollectorsEnabled) return false
 
         return isAllowedBySpecies(pokemonEntity) || isDesignatedCollector(pokemonEntity)
@@ -126,7 +126,9 @@ object HoneyCollector : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestBeehive.down())
+        if (currentTarget == closestBeehive) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestBeehive.down())
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestHoneycomb(world, closestBeehive, pokemonEntity)
@@ -171,7 +173,6 @@ object HoneyCollector : Worker {
      * and it is allowed in the config.
      */
     private fun isAllowedBySpecies(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.combeeLineCollectsHoney) return false
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return speciesName in VALID_SPECIES
@@ -182,7 +183,6 @@ object HoneyCollector : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedCollector(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.honeyCollectors.any { it.lowercase() == speciesName }
     }

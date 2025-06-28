@@ -37,13 +37,13 @@ object TumblestoneHarvester : Worker {
     )
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+    private val config = CobbleworkersConfigHolder.config.tumblestone
 
     /**
      * Determines if Pokémon is eligible to be a tumblestone harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.tumblestoneHarvestersEnabled) return false
 
         return isAllowedBySteelType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
@@ -126,7 +126,9 @@ object TumblestoneHarvester : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestTumblestone)
+        if (currentTarget == closestTumblestone) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestTumblestone)
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             harvestTumblestone(world, closestTumblestone, pokemonEntity)
@@ -184,7 +186,6 @@ object TumblestoneHarvester : Worker {
      * and steel type harvesting is enabled via config.
      */
     private fun isAllowedBySteelType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         return config.steelTypeHarvestsTumblestone && pokemonEntity.pokemon.types.any { it == ElementalTypes.STEEL }
     }
 
@@ -193,7 +194,6 @@ object TumblestoneHarvester : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.tumblestoneHarvesters.any { it.lowercase() == speciesName }
     }

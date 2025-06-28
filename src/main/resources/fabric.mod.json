@@ -1,8 +1,8 @@
 {
 	"schemaVersion": 1,
 	"id": "cobbleworkers",
-	"version": "${version}",
-	"name": "cobbleworkers",
+	"version": "1.0.0",
+	"name": "Cobbleworkers",
 	"description": "Pasture block can now be used as a utility block that gives Pokémon jobs!",
 	"authors": [
 		"Accieo"
@@ -34,11 +34,7 @@
 		]
 	},
 	"mixins": [
-		"cobbleworkers.mixins.json",
-		{
-			"config": "cobbleworkers.client.mixins.json",
-			"environment": "client"
-		}
+		"cobbleworkers.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.14",

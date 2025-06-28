@@ -10,35 +10,71 @@ package accieo.cobbleworkers.config
 
 import me.shedaniel.autoconfig.ConfigData
 import me.shedaniel.autoconfig.annotation.Config
+import me.shedaniel.autoconfig.annotation.ConfigEntry
 
 @Config(name = "cobbleworkers")
 class CobbleworkersConfig : ConfigData {
-    // Apricorn harvesting
-    var apricornHarvestersEnabled = true
-    var bugTypeHarvestsApricorns = true
-    var apricornHarvesters: MutableList<String> = mutableListOf("dragonite")
-    // Crop irrigation
-    var cropIrrigatorsEnabled = true
-    var waterTypeIrrigatesCrops = true
-    var cropIrrigators: MutableList<String> = mutableListOf("dragonite")
-    // Amethyst harvesting
-    var amethystHarvestersEnabled = true
-    var rockTypeHarvestsAmethyst = true
-    var amethystHarvesters: MutableList<String> = mutableListOf("machop", "machoke", "machamp")
-    // Tumblestone harvesting
-    var tumblestoneHarvestersEnabled = true
-    var steelTypeHarvestsTumblestone = true
-    var tumblestoneHarvesters: MutableList<String> = mutableListOf("machop", "machoke", "machamp")
-    // Crop harvesting
-    var cropHarvestersEnabled = true
-    var grassTypeHarvestsCrops = true
-    var cropHarvesters: MutableList<String> = mutableListOf("umbreon")
-    // Berry harvesting
-    var berryHarvestersEnabled = true
-    var grassTypeHarvestsBerries = true
-    var berryHarvesters: MutableList<String> = mutableListOf("umbreon")
-    // Honey collectors
-    var honeyCollectorsEnabled = true
-    var combeeLineCollectsHoney = true
-    var honeyCollectors: MutableList<String> = mutableListOf("ninjask")
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var apricorn = ApricornGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var irrigation = IrrigationGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var amethyst = AmethystGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var tumblestone = TumblestoneGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var cropHarvest = CropHarvestGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var berries = BerriesGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    var honey = HoneyGroup()
+
+    class ApricornGroup {
+        var apricornHarvestersEnabled = true
+        var bugTypeHarvestsApricorns = true
+        var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
+    }
+
+    class IrrigationGroup {
+        var cropIrrigatorsEnabled = true
+        var waterTypeIrrigatesCrops = true
+        var cropIrrigators: MutableList<String> = mutableListOf("pikachu")
+    }
+
+    class AmethystGroup {
+        var amethystHarvestersEnabled = true
+        var rockTypeHarvestsAmethyst = true
+        var amethystHarvesters: MutableList<String> = mutableListOf("pikachu")
+    }
+
+    class TumblestoneGroup {
+        var tumblestoneHarvestersEnabled = true
+        var steelTypeHarvestsTumblestone = true
+        var tumblestoneHarvesters: MutableList<String> = mutableListOf("pikachu")
+    }
+
+    class CropHarvestGroup {
+        var cropHarvestersEnabled = true
+        var grassTypeHarvestsCrops = true
+        var cropHarvesters: MutableList<String> = mutableListOf("pikachu")
+    }
+
+    class BerriesGroup {
+        var berryHarvestersEnabled = true
+        var grassTypeHarvestsBerries = true
+        var berryHarvesters: MutableList<String> = mutableListOf("pikachu")
+    }
+
+    class HoneyGroup {
+        var honeyCollectorsEnabled = true
+        var combeeLineCollectsHoney = true
+        var honeyCollectors: MutableList<String> = mutableListOf("pikachu")
+    }
 }

@@ -17,12 +17,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PokemonPastureBlockEntity.class)
 public class PokemonPastureBlockEntityMixin {
+	@Unique
+	private static long lastErrorLogTime = 0;
+	@Unique
+	private static final long ERROR_LOG_CD_MS = 10_000;
+
 	@Inject(at = @At("TAIL"), method = "TICKER$lambda$14")
 	private static void init(World world, BlockPos blockPos, BlockState blockState, PokemonPastureBlockEntity pastureBlock, CallbackInfo ci) {
 		if (world.isClient) return;
@@ -37,8 +43,12 @@ public class PokemonPastureBlockEntityMixin {
 				try {
 					WorkerDispatcher.INSTANCE.tickAll(world, blockPos, pokemonEntity);
 				} catch (Exception e) {
-					Cobbleworkers.logger.error("[Cobbleworkers]: Error while processing pasture mixin");
-					Cobbleworkers.logger.error(e.getMessage());
+					long now = System.currentTimeMillis();
+					if (now - lastErrorLogTime > ERROR_LOG_CD_MS) {
+						Cobbleworkers.logger.error("[Cobbleworkers]: Error while processing pasture mixin");
+						Cobbleworkers.logger.error(e.getMessage());
+						lastErrorLogTime = now;
+					}
 				}
 			}
 		});

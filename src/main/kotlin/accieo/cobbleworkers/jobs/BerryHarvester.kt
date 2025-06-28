@@ -20,11 +20,8 @@ import com.cobblemon.mod.common.util.toBlockPos
 import net.minecraft.block.Block
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
-import net.minecraft.loot.context.LootContextParameterSet
-import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.TagKey
-import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
@@ -42,13 +39,13 @@ object BerryHarvester : Worker {
     private val BERRIES_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of("cobblemon", "berries"))
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+    private val config = CobbleworkersConfigHolder.config.berries
 
     /**
      * Determines if Pokémon is eligible to be a berry harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.berryHarvestersEnabled) return false
 
         return isAllowedByGrassType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
@@ -132,7 +129,9 @@ object BerryHarvester : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestBerry)
+        if (currentTarget == closestBerry) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestBerry)
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestBerry(world, closestBerry, pokemonEntity)
@@ -186,7 +185,6 @@ object BerryHarvester : Worker {
      * and grass type harvesting is enabled via config.
      */
     private fun isAllowedByGrassType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         return config.grassTypeHarvestsBerries && pokemonEntity.pokemon.types.any { it == ElementalTypes.GRASS }
     }
 
@@ -195,7 +193,6 @@ object BerryHarvester : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.berryHarvesters.any { it.lowercase() == speciesName }
     }

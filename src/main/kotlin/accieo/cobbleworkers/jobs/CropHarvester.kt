@@ -32,12 +32,13 @@ object CropHarvester : Worker {
     private const val VERTICAL_SEARCH_RANGE = 5
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+    private val config = CobbleworkersConfigHolder.config.cropHarvest
+
     /**
      * Determines if Pokémon is eligible to be a crop harvester.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         if (!config.cropHarvestersEnabled) return false
 
         return isAllowedByGrassType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
@@ -120,7 +121,9 @@ object CropHarvester : Worker {
             return
         }
 
-        CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestCrop)
+        if (currentTarget == closestCrop) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestCrop)
+        }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             CobbleworkersCropUtils.harvestCrop(world, closestCrop, pokemonEntity, heldItemsByPokemon)
@@ -133,7 +136,6 @@ object CropHarvester : Worker {
      * and grass type harvesting is enabled via config.
      */
     private fun isAllowedByGrassType(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         return config.grassTypeHarvestsCrops && pokemonEntity.pokemon.types.any { it == ElementalTypes.GRASS }
     }
 
@@ -142,7 +144,6 @@ object CropHarvester : Worker {
      * explicitly listed in the config.
      */
     private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
-        val config = CobbleworkersConfigHolder.config
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
         return config.cropHarvesters.any { it.lowercase() == speciesName }
     }

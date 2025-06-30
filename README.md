@@ -10,6 +10,8 @@ Cobbleworkers is a companion server-side mod for Cobblemon `1.6.1` that turns th
 
 ## Features
 
+![cobbleworkers-infographic](src/main/resources/assets/cobbleworkers/infographic/infographic.png)
+
 By default
 - **Crop Irrigation** – Water-types keep crops hydrated.
 - **Crop Harvesting** – Grass-types assist with crop harvesting.

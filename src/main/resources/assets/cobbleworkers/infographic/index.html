@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Cobbleworkers - Infographic</title>
+	<style>
+		body {
+			font-family: GohuFont, monospace;
+			background: url("./public/bg.png") repeat;
+			background-size: 340px;
+			margin: 0;
+			padding: 0;
+		}
+
+		table {
+			margin: 40px auto;
+			border-collapse: separate;
+			border-spacing: 0;
+			background: rgba(255, 255, 255, 0.85);
+			border-radius: 18px;
+			box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+			overflow: hidden;
+			min-width: 600px;
+		}
+
+		th,
+		td {
+			padding: 18px 28px;
+			text-align: left;
+			font-size: 1.2em;
+		}
+
+		th {
+			background: #f5f5f5;
+			font-size: 1.3em;
+		}
+
+		tr:nth-child(even) td {
+			background: #f0f8ff44;
+		}
+
+		.type-cell {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.type-icon {
+			width: 36px;
+			height: 36px;
+			display: inline-block;
+			background-image: url("./public/types.png");
+			background-repeat: no-repeat;
+			background-size: auto 36px;
+			vertical-align: middle;
+		}
+	</style>
+</head>
+
+<body>
+	<table>
+		<thead>
+			<tr>
+				<th>Job name</th>
+				<th>Type</th>
+				<th>Pokémon</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Apricorn harvesting</td>
+				<td class="type-cell"><span class="type-icon" data-type="Bug"></span>Bug</td>
+				<td>Pikachu</td>
+			</tr>
+			<tr>
+				<td>Berry harvesting</td>
+				<td class="type-cell"><span class="type-icon" data-type="Grass"></span>Grass</td>
+				<td>Pikachu</td>
+			</tr>
+			<tr>
+				<td>Amethyst harvesting</td>
+				<td class="type-cell"><span class="type-icon" data-type="Rock"></span>Rock</td>
+				<td>Pikachu</td>
+			</tr>
+			<tr>
+				<td>Tumblestone harvesting</td>
+				<td class="type-cell"><span class="type-icon" data-type="Steel"></span>Steel</td>
+				<td>Pikachu</td>
+			</tr>
+			<tr>
+				<td>Crop harvesting</td>
+				<td class="type-cell"><span class="type-icon" data-type="Grass"></span>Grass</td>
+				<td>Pikachu</td>
+			</tr>
+			<tr>
+				<td>Crop irrigation</td>
+				<td class="type-cell"><span class="type-icon" data-type="Water"></span>Water</td>
+				<td>Pikachu</td>
+			</tr>
+			<tr>
+				<td>Honey collecting</td>
+				<td class="type-cell"><span class="type-icon" data-type="N.A."></span>None</td>
+				<td>Combee, Vespiquen, Pikachu</td>
+			</tr>
+		</tbody>
+	</table>
+	<script>
+		// Map type names to their index in the sprite (left to right)
+		const typeOrder = [
+			"Normal", "Fire", "Water", "Grass", "Electric", "Ice", "Fighting", "Poison",
+			"Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark",
+			"Steel", "Fairy"
+		];
+		document.querySelectorAll(".type-icon").forEach(icon => {
+			const type = icon.getAttribute("data-type");
+			const idx = typeOrder.indexOf(type);
+			if (idx >= 0) {
+				icon.style.backgroundPosition = `-${idx * 36}px 0`;
+			} else {
+				icon.style.background = "none";
+			}
+		});
+	</script>
+</body>
+
+</html>

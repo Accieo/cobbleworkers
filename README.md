@@ -20,6 +20,7 @@ By default
 - **Amethyst Mining** – Rock-types collect amethyst clusters nearby.
 - **Tumblestone Harvesting** – Steel-types collect tumblestone.
 - **Honey Collection** – The combee line gathers honeycombs from beehives.
+- **Mint Harvesting** - Fairy-types harvest mints.
 
 Pokémon will automatically place all of the items in inventories nearby!
 

@@ -12,7 +12,7 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
-import com.cobblemon.mod.common.api.types.ElementalTypes
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.block.ApricornBlock
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
@@ -48,7 +48,7 @@ object ApricornHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.apricornHarvestersEnabled) return false
 
-        return isAllowedByBugType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
+        return  CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsApricorns, pokemonEntity) || isDesignatedHarvester(pokemonEntity)
     }
 
     /**
@@ -180,14 +180,6 @@ object ApricornHarvester : Worker {
         }
 
         world.setBlockState(apricornPos, apricornState.with(ApricornBlock.AGE, 0), Block.NOTIFY_ALL)
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as a harvester because it's a bug type
-     * and bug type harvesting is enabled via config.
-     */
-    private fun isAllowedByBugType(pokemonEntity: PokemonEntity): Boolean {
-        return config.bugTypeHarvestsApricorns && pokemonEntity.pokemon.types.any { it == ElementalTypes.BUG }
     }
 
     /**

@@ -12,16 +12,13 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
-import com.cobblemon.mod.common.util.toBlockPos
 import net.minecraft.block.BeehiveBlock
 import net.minecraft.block.Block
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
-import net.minecraft.loot.context.LootContextParameterSet
-import net.minecraft.loot.context.LootContextParameters
-import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
@@ -46,7 +43,7 @@ object HoneyCollector : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.honeyCollectorsEnabled) return false
 
-        return isAllowedBySpecies(pokemonEntity) || isDesignatedCollector(pokemonEntity)
+        return isAllowedBySpecies(pokemonEntity) || isDesignatedCollector(pokemonEntity) || CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsHoney, pokemonEntity)
     }
 
     /**

@@ -12,7 +12,7 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
-import com.cobblemon.mod.common.api.types.ElementalTypes
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.block.BerryBlock
 import com.cobblemon.mod.common.block.entity.BerryBlockEntity
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
@@ -48,7 +48,7 @@ object BerryHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.berryHarvestersEnabled) return false
 
-        return isAllowedByGrassType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
+        return CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsBerries, pokemonEntity) || isDesignatedHarvester(pokemonEntity)
     }
 
     /**
@@ -178,14 +178,6 @@ object BerryHarvester : Worker {
         }
 
         world.setBlockState(berryPos, berryState.with(BerryBlock.AGE, BerryBlock.MATURE_AGE), Block.NOTIFY_ALL)
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as a harvester because it's a grass type
-     * and grass type harvesting is enabled via config.
-     */
-    private fun isAllowedByGrassType(pokemonEntity: PokemonEntity): Boolean {
-        return config.grassTypeHarvestsBerries && pokemonEntity.pokemon.types.any { it == ElementalTypes.GRASS }
     }
 
     /**

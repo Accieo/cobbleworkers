@@ -12,8 +12,8 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.CobblemonBlocks
-import com.cobblemon.mod.common.api.types.ElementalTypes
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -46,7 +46,7 @@ object TumblestoneHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.tumblestoneHarvestersEnabled) return false
 
-        return isAllowedBySteelType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
+        return CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsTumblestone, pokemonEntity) || isDesignatedHarvester(pokemonEntity)
     }
 
     /**
@@ -179,14 +179,6 @@ object TumblestoneHarvester : Worker {
         }
 
         world.setBlockState(tumblestonePos, Blocks.AIR.defaultState)
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as a harvester because it's a steel type
-     * and steel type harvesting is enabled via config.
-     */
-    private fun isAllowedBySteelType(pokemonEntity: PokemonEntity): Boolean {
-        return config.steelTypeHarvestsTumblestone && pokemonEntity.pokemon.types.any { it == ElementalTypes.STEEL }
     }
 
     /**

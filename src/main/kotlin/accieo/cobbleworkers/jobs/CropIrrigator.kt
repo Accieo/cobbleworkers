@@ -12,7 +12,7 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersCropUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
-import com.cobblemon.mod.common.api.types.ElementalTypes
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
 import net.minecraft.block.FarmlandBlock
@@ -33,7 +33,7 @@ object CropIrrigator : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.cropIrrigatorsEnabled) return false
 
-        return isAllowedByWaterType(pokemonEntity) || isDesignatedIrrigator(pokemonEntity)
+        return CobbleworkersTypeUtils.isAllowedByType(config.typeIrrigatesCrops, pokemonEntity) || isDesignatedIrrigator(pokemonEntity)
     }
 
     /**
@@ -66,14 +66,6 @@ object CropIrrigator : Worker {
             )
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as an irrigator because it's a water type
-     * and water type irrigator is enabled via config.
-     */
-    private fun isAllowedByWaterType(pokemonEntity: PokemonEntity): Boolean {
-        return config.waterTypeIrrigatesCrops && pokemonEntity.pokemon.types.any { it == ElementalTypes.WATER }
     }
 
     /**

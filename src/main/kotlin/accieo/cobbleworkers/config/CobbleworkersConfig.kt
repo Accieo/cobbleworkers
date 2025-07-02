@@ -38,43 +38,58 @@ class CobbleworkersConfig : ConfigData {
 
     class ApricornGroup {
         var apricornHarvestersEnabled = true
-        var bugTypeHarvestsApricorns = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsApricorns: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.BUG
     }
 
     class IrrigationGroup {
         var cropIrrigatorsEnabled = true
-        var waterTypeIrrigatesCrops = true
         var cropIrrigators: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeIrrigatesCrops: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
     }
 
     class AmethystGroup {
         var amethystHarvestersEnabled = true
-        var rockTypeHarvestsAmethyst = true
         var amethystHarvesters: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsAmethyst: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.ROCK
     }
 
     class TumblestoneGroup {
         var tumblestoneHarvestersEnabled = true
-        var steelTypeHarvestsTumblestone = true
         var tumblestoneHarvesters: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsTumblestone: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.STEEL
     }
 
     class CropHarvestGroup {
         var cropHarvestersEnabled = true
-        var grassTypeHarvestsCrops = true
         var cropHarvesters: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsCrops: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GRASS
     }
 
     class BerriesGroup {
         var berryHarvestersEnabled = true
-        var grassTypeHarvestsBerries = true
         var berryHarvesters: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsBerries: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GRASS
     }
 
     class HoneyGroup {
         var honeyCollectorsEnabled = true
         var combeeLineCollectsHoney = true
         var honeyCollectors: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsHoney: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.NONE
     }
 }

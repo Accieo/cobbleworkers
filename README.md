@@ -29,5 +29,62 @@ Each job can be customized via a config file. Enable/disable job types and speci
 Cobbleworkers uses [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) and [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) for easy in-game tweaking
 when using the minecraft integrated server, for servers use the config file.
 
+Sample default config
+
+```json
+{
+  "apricorn": {
+    "apricornHarvestersEnabled": true,
+    "apricornHarvesters": [
+      "pikachu"
+    ],
+    "typeHarvestsApricorns": "BUG"
+  },
+  "irrigation": {
+    "cropIrrigatorsEnabled": true,
+    "cropIrrigators": [
+      "pikachu"
+    ],
+    "typeIrrigatesCrops": "WATER"
+  },
+  "amethyst": {
+    "amethystHarvestersEnabled": true,
+    "amethystHarvesters": [
+      "pikachu"
+    ],
+    "typeHarvestsAmethyst": "ROCK"
+  },
+  "tumblestone": {
+    "tumblestoneHarvestersEnabled": true,
+    "tumblestoneHarvesters": [
+      "pikachu"
+    ],
+    "typeHarvestsTumblestone": "STEEL"
+  },
+  "cropHarvest": {
+    "cropHarvestersEnabled": true,
+    "cropHarvesters": [
+      "pikachu"
+    ],
+    "typeHarvestsCrops": "GRASS"
+  },
+  "berries": {
+    "berryHarvestersEnabled": true,
+    "berryHarvesters": [
+      "pikachu"
+    ],
+    "typeHarvestsBerries": "GRASS"
+  },
+  "honey": {
+    "honeyCollectorsEnabled": true,
+    "combeeLineCollectsHoney": true,
+    "honeyCollectors": [
+      "pikachu"
+    ],
+    "typeHarvestsHoney": "NONE"
+  }
+}
+```
+
 ## License
 Licensed under [MPL-2.0](https://mozilla.org/MPL/2.0/)

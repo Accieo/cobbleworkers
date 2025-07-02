@@ -12,7 +12,7 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
-import com.cobblemon.mod.common.api.types.ElementalTypes
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -45,7 +45,7 @@ object AmethystHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.amethystHarvestersEnabled) return false
 
-        return isAllowedByRockType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
+        return CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsAmethyst, pokemonEntity) || isDesignatedHarvester(pokemonEntity)
     }
 
     /**
@@ -178,14 +178,6 @@ object AmethystHarvester : Worker {
         }
 
         world.setBlockState(amethystPos, Blocks.AIR.defaultState)
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as a harvester because it's a rock type
-     * and rock type harvesting is enabled via config.
-     */
-    private fun isAllowedByRockType(pokemonEntity: PokemonEntity): Boolean {
-        return config.rockTypeHarvestsAmethyst && pokemonEntity.pokemon.types.any { it == ElementalTypes.ROCK }
     }
 
     /**

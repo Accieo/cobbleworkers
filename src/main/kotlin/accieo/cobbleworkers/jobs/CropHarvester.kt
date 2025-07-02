@@ -13,7 +13,7 @@ import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersCropUtils
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
-import com.cobblemon.mod.common.api.types.ElementalTypes
+import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
 import net.minecraft.inventory.Inventory
@@ -41,7 +41,7 @@ object CropHarvester : Worker {
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.cropHarvestersEnabled) return false
 
-        return isAllowedByGrassType(pokemonEntity) || isDesignatedHarvester(pokemonEntity)
+        return CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsCrops, pokemonEntity) || isDesignatedHarvester(pokemonEntity)
     }
 
     /**
@@ -129,14 +129,6 @@ object CropHarvester : Worker {
             CobbleworkersCropUtils.harvestCrop(world, closestCrop, pokemonEntity, heldItemsByPokemon)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as a harvester because it's a grass type
-     * and grass type harvesting is enabled via config.
-     */
-    private fun isAllowedByGrassType(pokemonEntity: PokemonEntity): Boolean {
-        return config.grassTypeHarvestsCrops && pokemonEntity.pokemon.types.any { it == ElementalTypes.GRASS }
     }
 
     /**

@@ -34,5 +34,9 @@
   "text.autoconfig.cobbleworkers.option.honey.honeyCollectorsEnabled": "Honey collectors enabled",
   "text.autoconfig.cobbleworkers.option.honey.combeeLineCollectsHoney": "Combee line harvests honey",
   "text.autoconfig.cobbleworkers.option.honey.honeyCollectors": "Honey collector Pokémon",
-  "text.autoconfig.cobbleworkers.option.honey.typeHarvestsHoney": "Pokémon type that harvests honey"
+  "text.autoconfig.cobbleworkers.option.honey.typeHarvestsHoney": "Pokémon type that harvests honey",
+  "text.autoconfig.cobbleworkers.option.mints": "Mint harvesting",
+  "text.autoconfig.cobbleworkers.option.mints.mintHarvestersEnabled": "Mint harvesters enabled",
+  "text.autoconfig.cobbleworkers.option.mints.mintHarvesters": "Mint harvester Pokémon",
+  "text.autoconfig.cobbleworkers.option.mints.typeHarvestsMints": "Pokémon type that harvests mints"
 }

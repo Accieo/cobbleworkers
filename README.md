@@ -82,6 +82,13 @@ Sample default config
       "pikachu"
     ],
     "typeHarvestsHoney": "NONE"
+  },
+  "mints": {
+    "mintHarvestersEnabled": true,
+    "mintHarvesters": [
+      "pikachu"
+    ],
+    "typeHarvestsMints": "FAIRY"
   }
 }
 ```

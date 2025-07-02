@@ -36,6 +36,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var honey = HoneyGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var mints = MintsGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -91,5 +94,13 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsHoney: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.NONE
+    }
+
+    class MintsGroup {
+        var mintHarvestersEnabled = true
+        var mintHarvesters: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsMints: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.FAIRY
     }
 }

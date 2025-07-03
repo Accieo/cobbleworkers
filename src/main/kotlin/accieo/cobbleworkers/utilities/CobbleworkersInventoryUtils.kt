@@ -11,6 +11,8 @@ package accieo.cobbleworkers.utilities
 import com.cobblemon.mod.common.CobblemonBlocks
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
+import net.minecraft.block.ChestBlock
+import net.minecraft.block.entity.ChestBlockEntity
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
@@ -59,12 +61,26 @@ object CobbleworkersInventoryUtils {
     }
 
     /**
+     * Attempt to get actual inventory (wrapper to handle double chests)
+     */
+    fun getActualInventory(inventory: Inventory): Inventory {
+        if (inventory !is ChestBlockEntity) return inventory
+        val world = inventory.world ?: return inventory
+        val pos = inventory.pos
+        val state = world.getBlockState(pos)
+        val block = state.block as? ChestBlock ?: return inventory
+        return ChestBlock.getInventory(block, state, world, pos, true) ?: inventory
+    }
+
+    /**
      * Inserts a list of ItemStack into an inventory, returning the remainder
      */
     fun insertStacks(inventory: Inventory, stacks: List<ItemStack>): List<ItemStack> {
+        val actualInventory = getActualInventory(inventory)
+
         val remainingDrops = mutableListOf<ItemStack>()
         stacks.forEach { stack ->
-            val remaining = insertStack(inventory, stack.copy())
+            val remaining = insertStack(actualInventory, stack.copy())
             if (!remaining.isEmpty) {
                 remainingDrops.add(remaining)
             }
@@ -100,6 +116,7 @@ object CobbleworkersInventoryUtils {
                 // If a slot is empty, item's stack size limits the amount we can place.
                 val toTransfer = minOf(stack.count, stack.maxCount)
                 inventory.setStack(i, stack.split(toTransfer))
+                inventory.markDirty()
             }
 
             if (stack.isEmpty) {
@@ -127,6 +144,7 @@ object CobbleworkersInventoryUtils {
 
                 inventoryStack.increment(toTransfer)
                 stack.decrement(toTransfer)
+                inventory.markDirty()
             }
 
             if (stack.isEmpty) {

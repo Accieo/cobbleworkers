@@ -45,11 +45,11 @@ object CobbleworkersCropUtils {
     /**
      * Finds the closest dry farmland
      */
-    fun findClosestFarmland(world: World, origin: BlockPos, searchRadius: Int): BlockPos? {
+    fun findClosestFarmland(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
 
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), 1.5, searchRadius.toDouble())
+        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
             val block = state.block
@@ -68,11 +68,11 @@ object CobbleworkersCropUtils {
     /**
      * Finds the closest crop
      */
-    fun findClosestCrop(world: World, origin: BlockPos, searchRadius: Int): BlockPos? {
+    fun findClosestCrop(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
 
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), 1.5, searchRadius.toDouble())
+        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
             val block = state.block

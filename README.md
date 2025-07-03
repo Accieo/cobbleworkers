@@ -30,8 +30,6 @@ Each job can be customized via a config file. Enable/disable job types and speci
 Cobbleworkers uses [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) and [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) for easy in-game tweaking
 when using the minecraft integrated server, for servers use the config file.
 
-Sample default config
-
 ```json
 {
   "apricorn": {
@@ -39,42 +37,54 @@ Sample default config
     "apricornHarvesters": [
       "pikachu"
     ],
-    "typeHarvestsApricorns": "BUG"
+    "typeHarvestsApricorns": "BUG",
+    "searchRadius": 8,
+    "searchHeight": 5
   },
   "irrigation": {
     "cropIrrigatorsEnabled": true,
     "cropIrrigators": [
       "pikachu"
     ],
-    "typeIrrigatesCrops": "WATER"
+    "typeIrrigatesCrops": "WATER",
+    "searchRadius": 8,
+    "searchHeight": 2
   },
   "amethyst": {
     "amethystHarvestersEnabled": true,
     "amethystHarvesters": [
       "pikachu"
     ],
-    "typeHarvestsAmethyst": "ROCK"
+    "typeHarvestsAmethyst": "ROCK",
+    "searchRadius": 8,
+    "searchHeight": 5
   },
   "tumblestone": {
     "tumblestoneHarvestersEnabled": true,
     "tumblestoneHarvesters": [
       "pikachu"
     ],
-    "typeHarvestsTumblestone": "STEEL"
+    "typeHarvestsTumblestone": "STEEL",
+    "searchRadius": 8,
+    "searchHeight": 5
   },
   "cropHarvest": {
     "cropHarvestersEnabled": true,
     "cropHarvesters": [
       "pikachu"
     ],
-    "typeHarvestsCrops": "GRASS"
+    "typeHarvestsCrops": "GRASS",
+    "searchRadius": 8,
+    "searchHeight": 3
   },
   "berries": {
     "berryHarvestersEnabled": true,
     "berryHarvesters": [
       "pikachu"
     ],
-    "typeHarvestsBerries": "GRASS"
+    "typeHarvestsBerries": "GRASS",
+    "searchRadius": 8,
+    "searchHeight": 5
   },
   "honey": {
     "honeyCollectorsEnabled": true,
@@ -82,14 +92,18 @@ Sample default config
     "honeyCollectors": [
       "pikachu"
     ],
-    "typeHarvestsHoney": "NONE"
+    "typeHarvestsHoney": "NONE",
+    "searchRadius": 8,
+    "searchHeight": 5
   },
   "mints": {
     "mintHarvestersEnabled": true,
     "mintHarvesters": [
       "pikachu"
     ],
-    "typeHarvestsMints": "FAIRY"
+    "typeHarvestsMints": "FAIRY",
+    "searchRadius": 8,
+    "searchHeight": 5
   }
 }
 ```

@@ -34,12 +34,12 @@ import kotlin.text.lowercase
  * Harvested items are deposited into the nearest available inventory.
  */
 object BerryHarvester : Worker {
-    private const val SEARCH_RADIUS = 8
-    private const val VERTICAL_SEARCH_RANGE = 5
     private val BERRIES_TAG = TagKey.of(RegistryKeys.BLOCK, Identifier.of("cobblemon", "berries"))
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
     private val config = CobbleworkersConfigHolder.config.berries
+    private val searchRadius get() = config.searchRadius
+    private val searchHeight get() = config.searchHeight
 
     /**
      * Determines if Pokémon is eligible to be a berry harvester.
@@ -76,8 +76,8 @@ object BerryHarvester : Worker {
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
         val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
         val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin,
-            SEARCH_RADIUS,
-            VERTICAL_SEARCH_RANGE, triedPositions)
+            searchRadius,
+            searchHeight, triedPositions)
 
         if (inventoryPos == null) {
             // No (untried) inventories found, so we just drop the remaining items and reset.
@@ -146,7 +146,7 @@ object BerryHarvester : Worker {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
 
-        val searchArea = Box(origin).expand(SEARCH_RADIUS.toDouble(), VERTICAL_SEARCH_RANGE.toDouble(), SEARCH_RADIUS.toDouble())
+        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)

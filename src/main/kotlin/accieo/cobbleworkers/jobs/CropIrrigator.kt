@@ -23,8 +23,9 @@ import net.minecraft.world.World
  * A worker job for a Pokémon to find, navigate to, and irrigate dry farmland.
  */
 object CropIrrigator : Worker {
-    private const val SEARCH_RADIUS = 8
     private val config = CobbleworkersConfigHolder.config.irrigation
+    private val searchRadius get() = config.searchRadius
+    private val searchHeight get() = config.searchHeight
 
     /**
      * Determines if Pokémon is eligible to be a crop irrigator.
@@ -43,7 +44,7 @@ object CropIrrigator : Worker {
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.uuid
-        val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, SEARCH_RADIUS) ?: return
+        val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, searchRadius, searchHeight) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null || currentTarget != closestFarmland) {

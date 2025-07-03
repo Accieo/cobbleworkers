@@ -28,11 +28,11 @@ import kotlin.text.lowercase
  * Harvested items are deposited into the nearest available inventory.
  */
 object CropHarvester : Worker {
-    private const val SEARCH_RADIUS = 8
-    private const val VERTICAL_SEARCH_RANGE = 5
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
     private val config = CobbleworkersConfigHolder.config.cropHarvest
+    private val searchRadius get() = config.searchRadius
+    private val searchHeight get() = config.searchHeight
 
     /**
      * Determines if Pokémon is eligible to be a crop harvester.
@@ -69,8 +69,8 @@ object CropHarvester : Worker {
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
         val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
         val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin,
-            SEARCH_RADIUS,
-            VERTICAL_SEARCH_RANGE, triedPositions)
+            searchRadius,
+            searchHeight, triedPositions)
 
         if (inventoryPos == null) {
             // No (untried) inventories found, so we just drop the remaining items and reset.
@@ -111,7 +111,7 @@ object CropHarvester : Worker {
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.uuid
-        val closestCrop = CobbleworkersCropUtils.findClosestCrop(world, origin, SEARCH_RADIUS) ?: return
+        val closestCrop = CobbleworkersCropUtils.findClosestCrop(world, origin, searchRadius, searchHeight) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {

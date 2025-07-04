@@ -115,8 +115,8 @@ object CropHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestCrop)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestCrop)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestCrop, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestCrop, world)
             }
             return
         }

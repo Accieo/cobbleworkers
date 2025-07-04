@@ -120,8 +120,8 @@ object ApricornHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestApricorn)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestApricorn)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestApricorn, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestApricorn, world)
             }
             return
         }

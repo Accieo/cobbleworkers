@@ -48,8 +48,8 @@ object CropIrrigator : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null || currentTarget != closestFarmland) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestFarmland)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFarmland)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestFarmland, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFarmland, world)
             }
             return
         }

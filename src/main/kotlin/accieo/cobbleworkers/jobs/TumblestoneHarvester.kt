@@ -120,8 +120,8 @@ object TumblestoneHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestTumblestone)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestTumblestone)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestTumblestone, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestTumblestone, world)
             }
             return
         }

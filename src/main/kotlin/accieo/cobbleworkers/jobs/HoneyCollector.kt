@@ -117,8 +117,8 @@ object HoneyCollector : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestBeehive)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBeehive)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestBeehive, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBeehive, world)
             }
             return
         }

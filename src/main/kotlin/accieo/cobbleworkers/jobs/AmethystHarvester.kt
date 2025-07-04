@@ -119,8 +119,8 @@ object AmethystHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestAmethyst)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestAmethyst)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestAmethyst, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestAmethyst, world)
             }
             return
         }

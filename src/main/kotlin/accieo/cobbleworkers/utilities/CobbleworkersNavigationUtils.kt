@@ -11,14 +11,17 @@ package accieo.cobbleworkers.utilities
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
+import net.minecraft.world.World
 import java.util.UUID
 
 /**
  * Pokémon navigation management.
  */
 object CobbleworkersNavigationUtils {
+    private data class Claim(val pokemonId: UUID, val claimTick: Long)
     private val pokemonToTarget = mutableMapOf<UUID, BlockPos>()
-    private val targetedBlocks = mutableSetOf<BlockPos>()
+    private val targetedBlocks = mutableMapOf<BlockPos, Claim>()
+    private const val CLAIM_TIMEOUT_TICKS = 240L
 
     /**
      * Checks if the Pokémon's bounding box intersects with the target block area.
@@ -41,13 +44,14 @@ object CobbleworkersNavigationUtils {
     }
 
     /**
-     * Assigns a target block to a Pokémon.
+     * Assigns a target block to a Pokémon and records the time.
      */
-    fun claimTarget(pokemonId: UUID, target: BlockPos) {
+    fun claimTarget(pokemonId: UUID, target: BlockPos, world: World) {
         releaseTarget(pokemonId)
 
-        pokemonToTarget[pokemonId] = target.toImmutable()
-        targetedBlocks.add(target.toImmutable())
+        val immutableTarget = target.toImmutable()
+        pokemonToTarget[pokemonId] = immutableTarget
+        targetedBlocks[immutableTarget] = Claim(pokemonId, world.time)
     }
 
     /**
@@ -70,8 +74,16 @@ object CobbleworkersNavigationUtils {
     /**
      * Checks if a specific block is targeted by any other Pokémon.
      */
-    fun isTargeted(pos: BlockPos): Boolean {
-        return targetedBlocks.contains(pos)
+    fun isTargeted(pos: BlockPos, world: World): Boolean {
+        val claim = targetedBlocks[pos] ?: return false
+
+        val isExpired = world.time - claim.claimTick > CLAIM_TIMEOUT_TICKS
+        if (isExpired) {
+            releaseTarget(claim.pokemonId)
+            return false
+        }
+
+        return true
     }
 
 }

@@ -123,8 +123,8 @@ object BerryHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestBerry)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBerry)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestBerry, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBerry, world)
             }
             return
         }

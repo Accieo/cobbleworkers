@@ -116,8 +116,8 @@ object MintHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestMint)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestMint)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestMint, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestMint, world)
             }
             return
         }

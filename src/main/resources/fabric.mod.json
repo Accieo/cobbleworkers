@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "cobbleworkers",
-	"version": "1.0.0",
+	"version": "1.1.0+1.6.1",
 	"name": "Cobbleworkers",
 	"description": "Pasture block can now be used as a utility block that gives Pokémon jobs!",
 	"authors": [

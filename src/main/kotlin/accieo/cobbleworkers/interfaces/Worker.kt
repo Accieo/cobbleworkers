@@ -18,6 +18,7 @@ interface Worker {
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     fun shouldRun(pokemonEntity: PokemonEntity): Boolean
+
     /**
      * Main logic loop for the worker, executed each tick.
      * NOTE: Origin refers to the pasture's block position.

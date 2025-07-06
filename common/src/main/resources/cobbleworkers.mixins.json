@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "accieo.cobbleworkers.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+  ],
+  "mixins": [
+    "PokemonPastureBlockEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

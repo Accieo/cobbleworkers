@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.neoforge
 
 import accieo.cobbleworkers.Cobbleworkers
+import accieo.cobbleworkers.neoforge.client.config.CobbleworkersModListScreen
 import net.minecraft.client.MinecraftClient
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.common.Mod
@@ -40,7 +41,7 @@ object CobbleworkersNeoForge {
     }
 
     private fun onClientSetup(event: FMLClientSetupEvent) {
-        //
+        CobbleworkersModListScreen.registerModScreen()
     }
 
     private fun onServerSetup(event: FMLDedicatedServerSetupEvent) {

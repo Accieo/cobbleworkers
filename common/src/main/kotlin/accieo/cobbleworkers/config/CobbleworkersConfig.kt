@@ -99,6 +99,7 @@ class CobbleworkersConfig : ConfigData {
     class CropHarvestGroup {
         var cropHarvestersEnabled = true
         var cropHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var shouldReplantCrops = true
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsCrops: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GRASS

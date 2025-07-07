@@ -8,6 +8,7 @@
 
 package accieo.cobbleworkers.utilities
 
+import accieo.cobbleworkers.config.CobbleworkersConfig
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.block.MedicinalLeekBlock
 import com.cobblemon.mod.common.block.RevivalHerbBlock
@@ -91,7 +92,7 @@ object CobbleworkersCropUtils {
     /**
      * Executes the complete harvesting processes for a single crop
      */
-    fun harvestCrop(world: World, blockPos: BlockPos, pokemonEntity: PokemonEntity, pokemonHeldItems:  MutableMap<UUID, List<ItemStack>>) {
+    fun harvestCrop(world: World, blockPos: BlockPos, pokemonEntity: PokemonEntity, pokemonHeldItems:  MutableMap<UUID, List<ItemStack>>, config: CobbleworkersConfig.CropHarvestGroup) {
         val blockState = world.getBlockState(blockPos)
         if (blockState.block !in VALID_CROP_BLOCKS) return
 
@@ -107,16 +108,22 @@ object CobbleworkersCropUtils {
             pokemonHeldItems[pokemonEntity.uuid] = drops
         }
 
-        when (blockState.block) {
-            Blocks.POTATOES -> world.setBlockState(blockPos, blockState.with(PotatoesBlock.AGE, 0))
-            Blocks.BEETROOTS -> world.setBlockState(blockPos, blockState.with(BeetrootsBlock.AGE, 0))
-            Blocks.CARROTS -> world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, 0))
-            Blocks.WHEAT -> world.setBlockState(blockPos, blockState.with(CropBlock.AGE, 0))
-            CobblemonBlocks.REVIVAL_HERB -> world.setBlockState(blockPos, blockState.with(RevivalHerbBlock.AGE, RevivalHerbBlock.MIN_AGE))
-            CobblemonBlocks.MEDICINAL_LEEK -> world.setBlockState(blockPos, blockState.with(MedicinalLeekBlock.AGE, 0))
-            CobblemonBlocks.VIVICHOKE_SEEDS -> world.setBlockState(blockPos, Blocks.AIR.defaultState)
-            else -> return
+        val newState = if (config.shouldReplantCrops) {
+            when (blockState.block) {
+                Blocks.POTATOES -> blockState.with(PotatoesBlock.AGE, 0)
+                Blocks.BEETROOTS -> blockState.with(BeetrootsBlock.AGE, 0)
+                Blocks.CARROTS -> blockState.with(CarrotsBlock.AGE, 0)
+                Blocks.WHEAT -> blockState.with(CropBlock.AGE, 0)
+                CobblemonBlocks.REVIVAL_HERB -> blockState.with(RevivalHerbBlock.AGE, RevivalHerbBlock.MIN_AGE)
+                CobblemonBlocks.MEDICINAL_LEEK -> blockState.with(MedicinalLeekBlock.AGE, 0)
+                CobblemonBlocks.VIVICHOKE_SEEDS -> Blocks.AIR.defaultState
+                else -> return
+            }
+        } else {
+            Blocks.AIR.defaultState
         }
+
+        world.setBlockState(blockPos, newState)
     }
 
     /**

@@ -32,6 +32,7 @@
   "text.autoconfig.cobbleworkers.option.cropHarvest": "Crop harvesting",
   "text.autoconfig.cobbleworkers.option.cropHarvest.cropHarvestersEnabled": "Crop harvesters enabled",
   "text.autoconfig.cobbleworkers.option.cropHarvest.grassTypeHarvestsCrops": "Grass type harvests crops",
+  "text.autoconfig.cobbleworkers.option.cropHarvest.shouldReplantCrops": "Replant crops",
   "text.autoconfig.cobbleworkers.option.cropHarvest.cropHarvesters": "Crop harvester Pokémon",
   "text.autoconfig.cobbleworkers.option.cropHarvest.typeHarvestsCrops": "Pokémon type that harvests crops",
   "text.autoconfig.cobbleworkers.option.cropHarvest.searchRadius": "Crop search radius",

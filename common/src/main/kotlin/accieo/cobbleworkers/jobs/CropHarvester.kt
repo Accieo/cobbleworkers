@@ -126,7 +126,7 @@ object CropHarvester : Worker {
         }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
-            CobbleworkersCropUtils.harvestCrop(world, closestCrop, pokemonEntity, heldItemsByPokemon)
+            CobbleworkersCropUtils.harvestCrop(world, closestCrop, pokemonEntity, heldItemsByPokemon, config)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
     }

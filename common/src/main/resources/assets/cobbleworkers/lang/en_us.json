@@ -24,6 +24,7 @@
   "text.autoconfig.cobbleworkers.option.tumblestone": "Tumblestone harvesting",
   "text.autoconfig.cobbleworkers.option.tumblestone.tumblestoneHarvestersEnabled": "Tumblestone harvesters enabled",
   "text.autoconfig.cobbleworkers.option.tumblestone.steelTypeHarvestsTumblestone": "Steel type harvests tumblestone",
+  "text.autoconfig.cobbleworkers.option.tumblestone.shouldReplantTumblestone": "Replant tumblestone",
   "text.autoconfig.cobbleworkers.option.tumblestone.tumblestoneHarvesters": "Tumblestone harvester Pokémon",
   "text.autoconfig.cobbleworkers.option.tumblestone.typeHarvestsTumblestone": "Pokémon type that harvests tumblestone",
   "text.autoconfig.cobbleworkers.option.tumblestone.searchRadius": "Tumblestone search radius",

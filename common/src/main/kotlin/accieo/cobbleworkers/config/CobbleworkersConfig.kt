@@ -84,6 +84,7 @@ class CobbleworkersConfig : ConfigData {
     class TumblestoneGroup {
         var tumblestoneHarvestersEnabled = true
         var tumblestoneHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var shouldReplantTumblestone = true
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsTumblestone: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.STEEL

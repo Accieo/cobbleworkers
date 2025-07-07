@@ -22,6 +22,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.state.property.DirectionProperty
+import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
@@ -32,6 +34,11 @@ object TumblestoneHarvester : Worker {
         CobblemonBlocks.TUMBLESTONE_CLUSTER,
         CobblemonBlocks.BLACK_TUMBLESTONE_CLUSTER,
         CobblemonBlocks.SKY_TUMBLESTONE_CLUSTER,
+    )
+    private val REPLACEMENT_BLOCKS: Map<Block, Block> = mapOf(
+        CobblemonBlocks.TUMBLESTONE_CLUSTER to CobblemonBlocks.SMALL_BUDDING_TUMBLESTONE,
+        CobblemonBlocks.BLACK_TUMBLESTONE_CLUSTER to CobblemonBlocks.SMALL_BUDDING_BLACK_TUMBLESTONE,
+        CobblemonBlocks.SKY_TUMBLESTONE_CLUSTER to CobblemonBlocks.SMALL_BUDDING_SKY_TUMBLESTONE
     )
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
@@ -178,7 +185,21 @@ object TumblestoneHarvester : Worker {
             heldItemsByPokemon[pokemonEntity.uuid] = drops
         }
 
-        world.setBlockState(tumblestonePos, Blocks.AIR.defaultState)
+        if (config.shouldReplantTumblestone) {
+            val originalBlock = tumblestoneState.block
+            val replacementBlock = REPLACEMENT_BLOCKS[originalBlock] ?: return
+
+            var replacementState = replacementBlock.defaultState
+
+            val facingProperty = Properties.FACING
+            if (replacementState.properties.contains(facingProperty) && tumblestoneState.contains(facingProperty)) {
+                replacementState = replacementState.with(facingProperty, tumblestoneState.get(facingProperty))
+            }
+
+            world.setBlockState(tumblestonePos, replacementState)
+        } else {
+            world.setBlockState(tumblestonePos, Blocks.AIR.defaultState)
+        }
     }
 
     /**

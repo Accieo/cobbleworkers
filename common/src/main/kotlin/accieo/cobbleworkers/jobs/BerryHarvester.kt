@@ -120,7 +120,7 @@ object BerryHarvester : Worker {
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.uuid
         val closestBerry = findClosestReadyBerry(world, origin, pokemonEntity) ?: return
-        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
+        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestBerry, world)) {

@@ -124,7 +124,7 @@ object TumblestoneHarvester : Worker {
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.uuid
         val closestTumblestone = findClosestTumblestone(world, origin, pokemonEntity) ?: return
-        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
+        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestTumblestone, world)) {

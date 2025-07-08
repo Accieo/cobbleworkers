@@ -45,7 +45,7 @@ object CropIrrigator : Worker {
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.uuid
         val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, searchRadius, searchHeight) ?: return
-        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId)
+        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null || currentTarget != closestFarmland) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestFarmland, world)) {

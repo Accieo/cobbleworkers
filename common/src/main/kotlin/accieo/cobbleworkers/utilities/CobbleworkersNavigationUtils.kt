@@ -21,7 +21,7 @@ object CobbleworkersNavigationUtils {
     private data class Claim(val pokemonId: UUID, val claimTick: Long)
     private val pokemonToTarget = mutableMapOf<UUID, BlockPos>()
     private val targetedBlocks = mutableMapOf<BlockPos, Claim>()
-    private const val CLAIM_TIMEOUT_TICKS = 240L
+    private const val CLAIM_TIMEOUT_TICKS = 300L
 
     /**
      * Checks if the Pokémon's bounding box intersects with the target block area.
@@ -47,6 +47,7 @@ object CobbleworkersNavigationUtils {
      * Assigns a target block to a Pokémon and records the time.
      */
     fun claimTarget(pokemonId: UUID, target: BlockPos, world: World) {
+        releaseExpiredClaims(world)
         releaseTarget(pokemonId)
 
         val immutableTarget = target.toImmutable()
@@ -67,7 +68,8 @@ object CobbleworkersNavigationUtils {
     /**
      * Gets the current target for a specific Pokémon.
      */
-    fun getTarget(pokemonId: UUID): BlockPos? {
+    fun getTarget(pokemonId: UUID, world: World): BlockPos? {
+        releaseExpiredClaims(world)
         return pokemonToTarget[pokemonId]
     }
 
@@ -75,15 +77,23 @@ object CobbleworkersNavigationUtils {
      * Checks if a specific block is targeted by any other Pokémon.
      */
     fun isTargeted(pos: BlockPos, world: World): Boolean {
-        val claim = targetedBlocks[pos] ?: return false
-
-        val isExpired = world.time - claim.claimTick > CLAIM_TIMEOUT_TICKS
-        if (isExpired) {
-            releaseTarget(claim.pokemonId)
-            return false
-        }
-
-        return true
+        releaseExpiredClaims(world)
+        return targetedBlocks.contains(pos)
     }
 
+    /**
+     * Releases expired targets.
+     */
+    private fun releaseExpiredClaims(world: World) {
+        val now = world.time
+        val expiredPokemon = mutableListOf<UUID>()
+
+        targetedBlocks.values.forEach { claim ->
+            if (now - claim.claimTick > CLAIM_TIMEOUT_TICKS) {
+                expiredPokemon.add(claim.pokemonId)
+            }
+        }
+
+        expiredPokemon.forEach { releaseTarget(it) }
+    }
 }

@@ -21,6 +21,9 @@ By default
 - **Tumblestone Harvesting** – Steel-types collect tumblestone.
 - **Honey Collection** – The combee line gathers honeycombs from beehives.
 - **Mint Harvesting** - Fairy-types harvest mints.
+- **Lava generation** - Fire-types generate lava on empty cauldrons.
+- **Water generation** - Water-types generate water on empty cauldrons.
+- **Powder snow generation** - Ice-types generate powder snow on empty cauldrons.
 
 Pokémon will automatically place all of the items in inventories nearby!
 
@@ -29,84 +32,6 @@ Each job can be customized via a config file. Enable/disable job types and speci
 
 Cobbleworkers uses [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) and [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) for easy in-game tweaking
 when using the minecraft integrated server, for servers use the config file.
-
-```json
-{
-  "apricorn": {
-    "apricornHarvestersEnabled": true,
-    "apricornHarvesters": [
-      "pikachu"
-    ],
-    "typeHarvestsApricorns": "BUG",
-    "searchRadius": 8,
-    "searchHeight": 5
-  },
-  "irrigation": {
-    "cropIrrigatorsEnabled": true,
-    "cropIrrigators": [
-      "pikachu"
-    ],
-    "typeIrrigatesCrops": "WATER",
-    "searchRadius": 8,
-    "searchHeight": 2
-  },
-  "amethyst": {
-    "amethystHarvestersEnabled": true,
-    "amethystHarvesters": [
-      "pikachu"
-    ],
-    "typeHarvestsAmethyst": "ROCK",
-    "searchRadius": 8,
-    "searchHeight": 5
-  },
-  "tumblestone": {
-    "tumblestoneHarvestersEnabled": true,
-    "tumblestoneHarvesters": [
-      "pikachu"
-    ],
-    "typeHarvestsTumblestone": "STEEL",
-    "searchRadius": 8,
-    "searchHeight": 5
-  },
-  "cropHarvest": {
-    "cropHarvestersEnabled": true,
-    "cropHarvesters": [
-      "pikachu"
-    ],
-    "typeHarvestsCrops": "GRASS",
-    "searchRadius": 8,
-    "searchHeight": 3
-  },
-  "berries": {
-    "berryHarvestersEnabled": true,
-    "berryHarvesters": [
-      "pikachu"
-    ],
-    "typeHarvestsBerries": "GRASS",
-    "searchRadius": 8,
-    "searchHeight": 5
-  },
-  "honey": {
-    "honeyCollectorsEnabled": true,
-    "combeeLineCollectsHoney": true,
-    "honeyCollectors": [
-      "pikachu"
-    ],
-    "typeHarvestsHoney": "NONE",
-    "searchRadius": 8,
-    "searchHeight": 5
-  },
-  "mints": {
-    "mintHarvestersEnabled": true,
-    "mintHarvesters": [
-      "pikachu"
-    ],
-    "typeHarvestsMints": "FAIRY",
-    "searchRadius": 8,
-    "searchHeight": 5
-  }
-}
-```
 
 ## License
 Licensed under [MPL-2.0](https://mozilla.org/MPL/2.0/)

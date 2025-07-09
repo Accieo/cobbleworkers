@@ -45,7 +45,7 @@ object WaterGenerator : Worker {
     }
 
     /**
-     * Handles logic for finding a cauldron and generating lava.
+     * Handles logic for finding a cauldron and generating water.
      */
     fun handleGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.uuid

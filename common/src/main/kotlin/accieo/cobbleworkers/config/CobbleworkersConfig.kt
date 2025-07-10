@@ -48,6 +48,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var snow = SnowGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var fishing = FishingGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -200,6 +203,22 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesSnow: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.ICE
+
+        /* Dangerous settings: It can highly impact server performance! */
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 5
+    }
+
+    class FishingGroup {
+        var fishingLootGeneratorsEnabled = true
+        var fishingLootGenerators: MutableList<String> = mutableListOf("pikachu")
+        var fishingLootGenerationCooldownSeconds: Long = 60
+        var fishingLootTreasureChance = 1
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeGeneratesFishingLoot: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
 
         /* Dangerous settings: It can highly impact server performance! */
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)

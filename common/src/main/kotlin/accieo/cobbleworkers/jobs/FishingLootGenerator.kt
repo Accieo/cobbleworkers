@@ -10,7 +10,6 @@ package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
-import accieo.cobbleworkers.utilities.CobbleworkersCropUtils
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
@@ -18,47 +17,88 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
+import net.minecraft.loot.LootTables
+import net.minecraft.loot.context.LootContextParameterSet
+import net.minecraft.loot.context.LootContextParameters
+import net.minecraft.loot.context.LootContextTypes
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import java.util.UUID
+import kotlin.collections.forEach
+import kotlin.collections.set
 import kotlin.text.lowercase
 
-/**
- * A worker job for a Pokémon to find, navigate to, and harvest fully grown crops.
- * Harvested items are deposited into the nearest available inventory.
- */
-object CropHarvester : Worker {
-    private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
-    private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
-    private val config = CobbleworkersConfigHolder.config.cropHarvest
+object FishingLootGenerator : Worker {
+    private val config = CobbleworkersConfigHolder.config.fishing
+    private val cooldownTicks get() = config.fishingLootGenerationCooldownSeconds * 20L
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+    private val treasureChance get() = config.fishingLootTreasureChance
+    private val lastGenerationTime = mutableMapOf<UUID, Long>()
+    private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
+    private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
 
     /**
-     * Determines if Pokémon is eligible to be a crop harvester.
+     * Determines if Pokémon is eligible to be a worker.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
-        if (!config.cropHarvestersEnabled) return false
+        if (!config.fishingLootGeneratorsEnabled) return false
 
-        return CobbleworkersTypeUtils.isAllowedByType(config.typeHarvestsCrops, pokemonEntity) || isDesignatedHarvester(pokemonEntity)
+        return CobbleworkersTypeUtils.isAllowedByType(config.typeGeneratesFishingLoot, pokemonEntity) || isDesignatedGenerator(pokemonEntity)
     }
 
     /**
-     * Main logic loop for the crop harvester, executed each tick.
-     * Delegates to state handlers handleHarvesting and handleDepositing
-     * to manage the current task of the Pokémon.
-     *
+     * Main logic loop for the worker, executed each tick.
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+        if (!pokemonEntity.isSubmergedInWater) return
+
         val heldItems = heldItemsByPokemon[pokemonEntity.uuid]
 
         if (heldItems.isNullOrEmpty()) {
             failedDepositLocations.remove(pokemonEntity.uuid)
-            handleHarvesting(world, origin, pokemonEntity)
+            handleGeneration(world, origin, pokemonEntity)
         } else {
             handleDepositing(world, origin, pokemonEntity, heldItems)
+        }
+    }
+
+    /**
+     * Handles logic for generating loot from fishing loot table.
+     */
+    fun handleGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+        val pokemonId = pokemonEntity.uuid
+        val now = world.time
+        val lastTime = lastGenerationTime[pokemonId] ?: 0L
+
+        if (now - lastTime < cooldownTicks) {
+            return
+        }
+
+        val treasureChancePercentage = treasureChance.toDouble() / 100
+        val useTreasureTable = world.random.nextFloat() < treasureChancePercentage
+
+        val lootParams = LootContextParameterSet.Builder(world as ServerWorld)
+            .add(LootContextParameters.ORIGIN, origin.toCenterPos())
+            .add(LootContextParameters.TOOL, ItemStack(Items.FISHING_ROD))
+            .addOptional(LootContextParameters.THIS_ENTITY, pokemonEntity)
+            .build(LootContextTypes.FISHING)
+
+        val lootTable = if (useTreasureTable) {
+            world.server.reloadableRegistries.getLootTable(LootTables.FISHING_TREASURE_GAMEPLAY)
+        } else {
+            world.server.reloadableRegistries.getLootTable(LootTables.FISHING_GAMEPLAY)
+        }
+
+        val drops = lootTable.generateLoot(lootParams)
+
+        if (drops.isNotEmpty()) {
+            lastGenerationTime[pokemonId] = now
+            heldItemsByPokemon[pokemonId] = drops
         }
     }
 
@@ -68,9 +108,7 @@ object CropHarvester : Worker {
      */
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
         val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
-        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin,
-            searchRadius,
-            searchHeight, triedPositions)
+        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, searchRadius, searchHeight, triedPositions)
 
         if (inventoryPos == null) {
             // No (untried) inventories found, so we just drop the remaining items and reset.
@@ -80,7 +118,7 @@ object CropHarvester : Worker {
             return
         }
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 2.0)) {
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 3.5)) {
             val inventory = world.getBlockEntity(inventoryPos) as? Inventory
             if (inventory == null) {
                 // Block not an inventory, mark it as failed
@@ -108,36 +146,11 @@ object CropHarvester : Worker {
     }
 
     /**
-     * Handles logic for finding and harvesting an apricorn when the Pokémon is not holding items.
-     */
-    private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
-        val closestCrop = CobbleworkersCropUtils.findClosestCrop(world, origin, searchRadius, searchHeight) ?: return
-        val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
-
-        if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestCrop, world)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestCrop, world)
-            }
-            return
-        }
-
-        if (currentTarget == closestCrop) {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestCrop)
-        }
-
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
-            CobbleworkersCropUtils.harvestCrop(world, closestCrop, pokemonEntity, heldItemsByPokemon, config)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
-        }
-    }
-
-    /**
-     * Checks if the Pokémon qualifies as a harvester because its species is
+     * Checks if the Pokémon qualifies as a generator because its species is
      * explicitly listed in the config.
      */
-    private fun isDesignatedHarvester(pokemonEntity: PokemonEntity): Boolean {
+    private fun isDesignatedGenerator(pokemonEntity: PokemonEntity): Boolean {
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
-        return config.cropHarvesters.any { it.lowercase() == speciesName }
+        return config.fishingLootGenerators.any { it.lowercase() == speciesName }
     }
 }

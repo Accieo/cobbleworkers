@@ -102,6 +102,7 @@ object HoneyCollector : Worker {
             } else {
                 heldItemsByPokemon.remove(pokemonEntity.uuid)
                 failedDepositLocations.remove(pokemonEntity.uuid)
+                pokemonEntity.navigation.stop()
             }
         } else {
             CobbleworkersNavigationUtils.navigateTo(pokemonEntity, inventoryPos)

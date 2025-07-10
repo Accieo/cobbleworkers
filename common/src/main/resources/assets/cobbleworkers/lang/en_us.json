@@ -78,12 +78,18 @@
   "text.autoconfig.cobbleworkers.option.snow.typeGeneratesSnow": "Pokémon type that generates powder snow",
   "text.autoconfig.cobbleworkers.option.snow.searchRadius": "Cauldron search radius",
   "text.autoconfig.cobbleworkers.option.snow.searchHeight": "Cauldron search height",
-  "text.autoconfig.cobbleworkers.option.fishing": "Fishing",
+  "text.autoconfig.cobbleworkers.option.fishing": "Fishing loot",
   "text.autoconfig.cobbleworkers.option.fishing.fishingLootGeneratorsEnabled": "Fishing loot generators enabled",
   "text.autoconfig.cobbleworkers.option.fishing.fishingLootGenerators": "Fishing loot generator Pokémon",
   "text.autoconfig.cobbleworkers.option.fishing.fishingLootGenerationCooldownSeconds": "Generation cooldown (in seconds)",
   "text.autoconfig.cobbleworkers.option.fishing.fishingLootTreasureChance": "Treasure chance (in %)",
   "text.autoconfig.cobbleworkers.option.fishing.typeGeneratesFishingLoot": "Pokémon type that generates fishing loot",
   "text.autoconfig.cobbleworkers.option.fishing.searchRadius": "Inventory search radius",
-  "text.autoconfig.cobbleworkers.option.fishing.searchHeight": "Inventory search height"
+  "text.autoconfig.cobbleworkers.option.fishing.searchHeight": "Inventory search height",
+  "text.autoconfig.cobbleworkers.option.pickup": "Pick-up loot",
+  "text.autoconfig.cobbleworkers.option.pickup.pickUpLootersEnabled": "Pick-up looters enabled",
+  "text.autoconfig.cobbleworkers.option.pickup.pickUpLootingCooldownSeconds": "Generation cooldown (in seconds)",
+  "text.autoconfig.cobbleworkers.option.pickup.lootTables": "Allowed loot tables",
+  "text.autoconfig.cobbleworkers.option.pickup.searchRadius": "Inventory search radius",
+  "text.autoconfig.cobbleworkers.option.pickup.searchHeight": "Inventory search height"
 }

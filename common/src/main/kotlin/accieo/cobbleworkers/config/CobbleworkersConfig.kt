@@ -51,6 +51,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var fishing = FishingGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var pickup = PickUpGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -219,6 +222,27 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesFishingLoot: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
+
+        /* Dangerous settings: It can highly impact server performance! */
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 5
+    }
+
+    class PickUpGroup {
+        var pickUpLootersEnabled = true
+        var pickUpLootingCooldownSeconds: Long = 120
+        var lootTables: MutableList<String> = mutableListOf(
+            "cobblemon:sets/any_ancient_held_item",
+            "cobblemon:sets/any_common_pokeball",
+            "cobblemon:sets/any_evo_stone",
+            "cobblemon:sets/any_exp_candy",
+            "cobblemon:sets/any_natural_heal_item",
+            "cobblemon:sets/any_type_gem",
+            "cobblemon:sets/any_apricorn_seed",
+            "cobblemon:villages/village_pokecenters",
+        )
 
         /* Dangerous settings: It can highly impact server performance! */
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)

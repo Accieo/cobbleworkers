@@ -54,6 +54,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var pickup = PickUpGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var diving = DivingGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -243,6 +246,22 @@ class CobbleworkersConfig : ConfigData {
             "cobblemon:sets/any_apricorn_seed",
             "cobblemon:villages/village_pokecenters",
         )
+
+        /* Dangerous settings: It can highly impact server performance! */
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 5
+    }
+
+    class DivingGroup {
+        var divingLootersEnabled = true
+        var divingLootingCooldownSeconds: Long = 120
+        var lootTables: MutableList<String> = mutableListOf(
+            "cobblemon:shipwreck_coves/gilded_chests/lesser_treasure",
+        )
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
 
         /* Dangerous settings: It can highly impact server performance! */
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)

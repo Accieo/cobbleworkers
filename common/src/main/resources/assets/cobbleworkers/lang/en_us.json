@@ -91,5 +91,11 @@
   "text.autoconfig.cobbleworkers.option.pickup.pickUpLootingCooldownSeconds": "Generation cooldown (in seconds)",
   "text.autoconfig.cobbleworkers.option.pickup.lootTables": "Allowed loot tables",
   "text.autoconfig.cobbleworkers.option.pickup.searchRadius": "Inventory search radius",
-  "text.autoconfig.cobbleworkers.option.pickup.searchHeight": "Inventory search height"
+  "text.autoconfig.cobbleworkers.option.pickup.searchHeight": "Inventory search height",
+  "text.autoconfig.cobbleworkers.option.diving": "Diving loot",
+  "text.autoconfig.cobbleworkers.option.diving.divingLootersEnabled": "Diving looters enabled",
+  "text.autoconfig.cobbleworkers.option.diving.divingLootingCooldownSeconds": "Generation cooldown (in seconds)",
+  "text.autoconfig.cobbleworkers.option.diving.lootTables": "Allowed loot tables",
+  "text.autoconfig.cobbleworkers.option.diving.searchRadius": "Inventory search radius",
+  "text.autoconfig.cobbleworkers.option.diving.searchHeight": "Inventory search height"
 }

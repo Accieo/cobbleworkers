@@ -256,7 +256,7 @@ class CobbleworkersConfig : ConfigData {
 
     class DivingGroup {
         var divingLootersEnabled = true
-        var divingLootingCooldownSeconds: Long = 120
+        var divingLootingCooldownSeconds: Long = 210
         var lootTables: MutableList<String> = mutableListOf(
             "cobblemon:shipwreck_coves/gilded_chests/lesser_treasure",
         )

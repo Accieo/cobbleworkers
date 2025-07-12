@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.utilities
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
@@ -21,6 +22,8 @@ object CobbleworkersNavigationUtils {
     private data class Claim(val pokemonId: UUID, val claimTick: Long)
     private val pokemonToTarget = mutableMapOf<UUID, BlockPos>()
     private val targetedBlocks = mutableMapOf<BlockPos, Claim>()
+    private val pokemonToPlayerTarget = mutableMapOf<UUID, UUID>()
+    private val targetedPlayers = mutableMapOf<UUID, Claim>()
     private const val CLAIM_TIMEOUT_TICKS = 300L
 
     /**
@@ -32,6 +35,14 @@ object CobbleworkersNavigationUtils {
     }
 
     /**
+     * Checks if the Pokémon is near enough to the player.
+     */
+    fun isPokemonNearPlayer(pokemonEntity: PokemonEntity, player: PlayerEntity, offset: Double = 1.0): Boolean {
+        val interactionHitbox = player.boundingBox.expand(offset)
+        return pokemonEntity.boundingBox.intersects(interactionHitbox)
+    }
+
+    /**
      * Commands the Pokémon entity to move towards the target destination.
      */
     fun navigateTo(pokemonEntity: PokemonEntity, targetPos: BlockPos, speed: Double = 1.0) {
@@ -39,6 +50,18 @@ object CobbleworkersNavigationUtils {
             targetPos.x + 0.5,
             targetPos.y.toDouble(),
             targetPos.z + 0.5,
+            speed
+        )
+    }
+
+    /**
+     * Commands the Pokémon entity to move towards the player's current position.
+     */
+    fun navigateToPlayer(pokemonEntity: PokemonEntity, player: PlayerEntity, speed: Double = 1.0) {
+        pokemonEntity.navigation.startMovingTo(
+            player.x,
+            player.y,
+            player.z,
             speed
         )
     }
@@ -56,12 +79,33 @@ object CobbleworkersNavigationUtils {
     }
 
     /**
+     * Overloaded claim target method to handle player claiming
+     */
+    fun claimTarget(pokemonId: UUID, player: PlayerEntity, world: World) {
+        releaseExpiredClaims(world)
+        releasePlayerTarget(pokemonId)
+
+        pokemonToPlayerTarget[pokemonId] = player.uuid
+        targetedPlayers[player.uuid] = Claim(pokemonId, world.time)
+    }
+
+    /**
      * Releases the target for a given Pokémon, making it available for others.
      */
     fun releaseTarget(pokemonId: UUID) {
         val releasedTarget = pokemonToTarget.remove(pokemonId)
         if (releasedTarget != null) {
             targetedBlocks.remove(releasedTarget)
+        }
+    }
+
+    /**
+     * Releases the player target for a given Pokémon.
+     */
+    fun releasePlayerTarget(pokemonId: UUID) {
+        val playerId = pokemonToPlayerTarget.remove(pokemonId)
+        if (playerId != null) {
+            targetedPlayers.remove(playerId)
         }
     }
 
@@ -74,11 +118,27 @@ object CobbleworkersNavigationUtils {
     }
 
     /**
+     * Gets the current player target UUID for a Pokémon.
+     */
+    fun getPlayerTarget(pokemonId: UUID, world: World): UUID? {
+        releaseExpiredClaims(world)
+        return pokemonToPlayerTarget[pokemonId]
+    }
+
+    /**
      * Checks if a specific block is targeted by any other Pokémon.
      */
     fun isTargeted(pos: BlockPos, world: World): Boolean {
         releaseExpiredClaims(world)
         return targetedBlocks.contains(pos)
+    }
+
+    /**
+     * Checks if a player is targeted by any Pokémon.
+     */
+    fun isPlayerTargeted(player: PlayerEntity, world: World): Boolean {
+        releaseExpiredClaims(world)
+        return targetedPlayers.containsKey(player.uuid)
     }
 
     /**
@@ -88,12 +148,19 @@ object CobbleworkersNavigationUtils {
         val now = world.time
         val expiredPokemon = mutableListOf<UUID>()
 
+        // Check block claims
         targetedBlocks.values.forEach { claim ->
-            if (now - claim.claimTick > CLAIM_TIMEOUT_TICKS) {
-                expiredPokemon.add(claim.pokemonId)
-            }
+            if (now - claim.claimTick > CLAIM_TIMEOUT_TICKS) expiredPokemon.add(claim.pokemonId)
         }
 
-        expiredPokemon.forEach { releaseTarget(it) }
+        // Check player claims
+        targetedPlayers.values.forEach { claim ->
+            if (now - claim.claimTick > CLAIM_TIMEOUT_TICKS) expiredPokemon.add(claim.pokemonId)
+        }
+
+        expiredPokemon.forEach {
+            releaseTarget(it)
+            releasePlayerTarget(it)
+        }
     }
 }

@@ -110,5 +110,13 @@
   "text.autoconfig.cobbleworkers.option.netherwartHarvest.shouldReplantNetherwart": "Replant netherwart",
   "text.autoconfig.cobbleworkers.option.netherwartHarvest.typeHarvestsNetherwart": "Pokémon type that harvests netherwart",
   "text.autoconfig.cobbleworkers.option.netherwartHarvest.searchRadius": "Netherwart search radius",
-  "text.autoconfig.cobbleworkers.option.netherwartHarvest.searchHeight": "Netherwart search height"
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.searchHeight": "Netherwart search height",
+  "text.autoconfig.cobbleworkers.option.healing": "Healing",
+  "text.autoconfig.cobbleworkers.option.healing.healersEnabled": "Healers enabled",
+  "text.autoconfig.cobbleworkers.option.healing.healers": "Healer Pokémon",
+  "text.autoconfig.cobbleworkers.option.healing.chanseyLineHealsPlayers": "Chansey line heals players",
+  "text.autoconfig.cobbleworkers.option.healing.regenDurationSeconds": "Regeneration effect duration (in seconds)",
+  "text.autoconfig.cobbleworkers.option.healing.regenAmplifier": "Regeneration amplifier (I, II)",
+  "text.autoconfig.cobbleworkers.option.healing.searchRadius": "Healing search radius",
+  "text.autoconfig.cobbleworkers.option.healing.searchHeight": "Healing search height"
 }

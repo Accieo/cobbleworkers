@@ -30,7 +30,8 @@ object WorkerDispatcher {
         FishingLootGenerator,
         PickUpLooter,
         DiveLooter,
-        GroundItemGatherer
+        GroundItemGatherer,
+        NetherwartHarvester
     )
 
     fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {

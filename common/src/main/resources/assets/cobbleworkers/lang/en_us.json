@@ -103,5 +103,12 @@
   "text.autoconfig.cobbleworkers.option.groundItemGathering.groundItemGatherers": "Item gatherer Pokémon",
   "text.autoconfig.cobbleworkers.option.groundItemGathering.typeGathersGroundItems": "Pokémon type that gathers items",
   "text.autoconfig.cobbleworkers.option.groundItemGathering.searchRadius": "Item gathering search radius",
-  "text.autoconfig.cobbleworkers.option.groundItemGathering.searchHeight": "Item gathering search height"
+  "text.autoconfig.cobbleworkers.option.groundItemGathering.searchHeight": "Item gathering search height",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest": "Netherwart harvesting",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.netherwartHarvestersEnabled": "Netherwart harvesters enabled",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.netherwartHarvesters": "Netherwart harvester Pokémon",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.shouldReplantNetherwart": "Replant netherwart",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.typeHarvestsNetherwart": "Pokémon type that harvests netherwart",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.searchRadius": "Netherwart search radius",
+  "text.autoconfig.cobbleworkers.option.netherwartHarvest.searchHeight": "Netherwart search height"
 }

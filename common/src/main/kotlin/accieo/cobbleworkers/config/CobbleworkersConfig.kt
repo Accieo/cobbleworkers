@@ -60,6 +60,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var groundItemGathering = GroundItemGathererGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var netherwartHarvest = NetherwartGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -283,5 +286,20 @@ class CobbleworkersConfig : ConfigData {
         var searchRadius = 8
         @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
         var searchHeight = 5
+    }
+
+    class NetherwartGroup {
+        var netherwartHarvestersEnabled = true
+        var netherwartHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var shouldReplantNetherwart = true
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeHarvestsNetherwart: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GHOST
+
+        /* Dangerous settings: It can highly impact server performance! */
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 3
     }
 }

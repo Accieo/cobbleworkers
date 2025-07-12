@@ -46,10 +46,11 @@ object GroundItemGatherer : Worker {
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val heldItems = heldItemsByPokemon[pokemonEntity.uuid]
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val heldItems = heldItemsByPokemon[pokemonId]
 
         if (heldItems.isNullOrEmpty()) {
-            failedDepositLocations.remove(pokemonEntity.uuid)
+            failedDepositLocations.remove(pokemonId)
             handleGathering(world, origin, pokemonEntity)
         } else {
             handleDepositing(world, origin, pokemonEntity, heldItems)
@@ -61,7 +62,8 @@ object GroundItemGatherer : Worker {
      * It will try multiple inventories nearby iteratively
      */
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
-        val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val triedPositions = failedDepositLocations.getOrPut(pokemonId) { mutableSetOf() }
         val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin,
             searchRadius,
             searchHeight, triedPositions)
@@ -69,8 +71,8 @@ object GroundItemGatherer : Worker {
         if (inventoryPos == null) {
             // No (untried) inventories found, so we just drop the remaining items and reset.
             itemsToDeposit.forEach { stack -> Block.dropStack(world, pokemonEntity.blockPos, stack) }
-            heldItemsByPokemon.remove(pokemonEntity.uuid)
-            failedDepositLocations.remove(pokemonEntity.uuid)
+            heldItemsByPokemon.remove(pokemonId)
+            failedDepositLocations.remove(pokemonId)
             return
         }
 
@@ -90,10 +92,10 @@ object GroundItemGatherer : Worker {
             }
 
             if (remainingDrops.isNotEmpty()) {
-                heldItemsByPokemon[pokemonEntity.uuid] = remainingDrops
+                heldItemsByPokemon[pokemonId] = remainingDrops
             } else {
-                heldItemsByPokemon.remove(pokemonEntity.uuid)
-                failedDepositLocations.remove(pokemonEntity.uuid)
+                heldItemsByPokemon.remove(pokemonId)
+                failedDepositLocations.remove(pokemonId)
                 pokemonEntity.navigation.stop()
             }
         } else {
@@ -105,7 +107,7 @@ object GroundItemGatherer : Worker {
      * Handles logic for finding and gathering an item on the ground.
      */
     private fun handleGathering(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
+        val pokemonId = pokemonEntity.pokemon.uuid
         val (closestItemPos, closestItem) = findClosestItem(world, origin, pokemonEntity) ?: return
 
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)

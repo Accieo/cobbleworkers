@@ -52,12 +52,13 @@ object DiveLooter : Worker {
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+        val pokemonId = pokemonEntity.pokemon.uuid
         if (!pokemonEntity.isSubmergedInWater) return
 
-        val heldItems = heldItemsByPokemon[pokemonEntity.uuid]
+        val heldItems = heldItemsByPokemon[pokemonId]
 
         if (heldItems.isNullOrEmpty()) {
-            failedDepositLocations.remove(pokemonEntity.uuid)
+            failedDepositLocations.remove(pokemonId)
             handleGeneration(world, origin, pokemonEntity)
         } else {
             handleDepositing(world, origin, pokemonEntity, heldItems)
@@ -68,7 +69,7 @@ object DiveLooter : Worker {
      * Handles logic for generating loot from cobblemon loot table.
      */
     fun handleGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
+        val pokemonId = pokemonEntity.pokemon.uuid
         val now = world.time
         val lastTime = lastGenerationTime[pokemonId] ?: 0L
 
@@ -102,14 +103,15 @@ object DiveLooter : Worker {
      * It will try multiple inventories nearby iteratively
      */
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
-        val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val triedPositions = failedDepositLocations.getOrPut(pokemonId) { mutableSetOf() }
         val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin, searchRadius, searchHeight, triedPositions)
 
         if (inventoryPos == null) {
             // No (untried) inventories found, so we just drop the remaining items and reset.
             itemsToDeposit.forEach { stack -> Block.dropStack(world, pokemonEntity.blockPos, stack) }
-            heldItemsByPokemon.remove(pokemonEntity.uuid)
-            failedDepositLocations.remove(pokemonEntity.uuid)
+            heldItemsByPokemon.remove(pokemonId)
+            failedDepositLocations.remove(pokemonId)
             return
         }
 
@@ -129,10 +131,10 @@ object DiveLooter : Worker {
             }
 
             if (remainingDrops.isNotEmpty()) {
-                heldItemsByPokemon[pokemonEntity.uuid] = remainingDrops
+                heldItemsByPokemon[pokemonId] = remainingDrops
             } else {
-                heldItemsByPokemon.remove(pokemonEntity.uuid)
-                failedDepositLocations.remove(pokemonEntity.uuid)
+                heldItemsByPokemon.remove(pokemonId)
+                failedDepositLocations.remove(pokemonId)
                 pokemonEntity.navigation.stop()
             }
         } else {

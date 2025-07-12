@@ -56,10 +56,11 @@ object AmethystHarvester : Worker {
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val heldItems = heldItemsByPokemon[pokemonEntity.uuid]
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val heldItems = heldItemsByPokemon[pokemonId]
 
         if (heldItems.isNullOrEmpty()) {
-            failedDepositLocations.remove(pokemonEntity.uuid)
+            failedDepositLocations.remove(pokemonId)
             handleHarvesting(world, origin, pokemonEntity)
         } else {
             handleDepositing(world, origin, pokemonEntity, heldItems)
@@ -71,7 +72,8 @@ object AmethystHarvester : Worker {
      * It will try multiple inventories nearby iteratively
      */
     private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
-        val triedPositions = failedDepositLocations.getOrPut(pokemonEntity.uuid) { mutableSetOf() }
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val triedPositions = failedDepositLocations.getOrPut(pokemonId) { mutableSetOf() }
         val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin,
            searchRadius,
            searchHeight, triedPositions)
@@ -79,8 +81,8 @@ object AmethystHarvester : Worker {
         if (inventoryPos == null) {
             // No (untried) inventories found, so we just drop the remaining items and reset.
             itemsToDeposit.forEach { stack -> Block.dropStack(world, pokemonEntity.blockPos, stack) }
-            heldItemsByPokemon.remove(pokemonEntity.uuid)
-            failedDepositLocations.remove(pokemonEntity.uuid)
+            heldItemsByPokemon.remove(pokemonId)
+            failedDepositLocations.remove(pokemonId)
             return
         }
 
@@ -100,10 +102,10 @@ object AmethystHarvester : Worker {
             }
 
             if (remainingDrops.isNotEmpty()) {
-                heldItemsByPokemon[pokemonEntity.uuid] = remainingDrops
+                heldItemsByPokemon[pokemonId] = remainingDrops
             } else {
-                heldItemsByPokemon.remove(pokemonEntity.uuid)
-                failedDepositLocations.remove(pokemonEntity.uuid)
+                heldItemsByPokemon.remove(pokemonId)
+                failedDepositLocations.remove(pokemonId)
                 pokemonEntity.navigation.stop()
             }
         } else {
@@ -115,7 +117,7 @@ object AmethystHarvester : Worker {
      * Handles logic for finding and harvesting an amethyst cluster when the Pokémon is not holding items.
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
+        val pokemonId = pokemonEntity.pokemon.uuid
         val closestAmethyst = findClosestAmethystCluster(world, origin, pokemonEntity) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
@@ -163,6 +165,7 @@ object AmethystHarvester : Worker {
      * Executes the complete harvesting process for a single amethyst cluster
      */
     private fun harvestAmethystCluster(world: World, amethystPos: BlockPos, pokemonEntity: PokemonEntity) {
+        val pokemonId = pokemonEntity.pokemon.uuid
         val amethystState = world.getBlockState(amethystPos)
         if (amethystState.block != Blocks.AMETHYST_CLUSTER) return
 
@@ -175,7 +178,7 @@ object AmethystHarvester : Worker {
         val drops = amethystState.getDroppedStacks(lootParams)
 
         if (drops.isNotEmpty()) {
-            heldItemsByPokemon[pokemonEntity.uuid] = drops
+            heldItemsByPokemon[pokemonId] = drops
         }
 
         world.setBlockState(amethystPos, Blocks.AIR.defaultState)

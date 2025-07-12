@@ -21,7 +21,7 @@ import net.minecraft.world.World
 
 object Healer : Worker {
     private val VALID_SPECIES: Set<String> = setOf("happiny", "chansey", "blissey")
-    private val VALID_MOVES: Set<String> = setOf("wish", "softboiled", "moonlight", "recover", "roost", "healbell", "aromatherapy", "synthesis", "rest")
+    private val VALID_MOVES: Set<String> = setOf("wish", "softboiled", "moonlight", "recover", "roost", "healbell", "aromatherapy", "synthesis", "rest", "lifedew")
     private val config = CobbleworkersConfigHolder.config.healing
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
@@ -57,7 +57,7 @@ object Healer : Worker {
      * Handles logic for finding a player and healing them.
      */
     private fun handleHealing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
+        val pokemonId = pokemonEntity.pokemon.uuid
         val nearbyPlayers = findNearbyPlayers(world, origin)
         if (nearbyPlayers.isEmpty()) {
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)

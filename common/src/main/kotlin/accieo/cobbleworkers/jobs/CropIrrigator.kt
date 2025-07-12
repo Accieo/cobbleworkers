@@ -43,7 +43,7 @@ object CropIrrigator : Worker {
      * NOTE: Origin refers to the pasture's block position.
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
+        val pokemonId = pokemonEntity.pokemon.uuid
         val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, searchRadius, searchHeight) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 

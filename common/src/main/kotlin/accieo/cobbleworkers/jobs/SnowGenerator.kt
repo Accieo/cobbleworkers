@@ -48,7 +48,7 @@ object SnowGenerator : Worker {
      * Handles logic for finding a cauldron and generating powder snow.
      */
     fun handleGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
-        val pokemonId = pokemonEntity.uuid
+        val pokemonId = pokemonEntity.pokemon.uuid
         val now = world.time
         val lastTime = lastGenerationTime[pokemonId] ?: 0L
 

@@ -57,6 +57,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var diving = DivingGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var groundItemGathering = GroundItemGathererGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -261,7 +264,19 @@ class CobbleworkersConfig : ConfigData {
             "cobblemon:shipwreck_coves/gilded_chests/lesser_treasure",
         )
 
+        /* Dangerous settings: It can highly impact server performance! */
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 5
+    }
+
+    class GroundItemGathererGroup {
+        var groundItemGatheringEnabled = true
+        var groundItemGatherers: MutableList<String> = mutableListOf("pikachu")
+
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeGathersGroundItems: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.PSYCHIC
 
         /* Dangerous settings: It can highly impact server performance! */
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)

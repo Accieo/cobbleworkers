@@ -29,7 +29,8 @@ object WorkerDispatcher {
         SnowGenerator,
         FishingLootGenerator,
         PickUpLooter,
-        DiveLooter
+        DiveLooter,
+        GroundItemGatherer
     )
 
     fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {

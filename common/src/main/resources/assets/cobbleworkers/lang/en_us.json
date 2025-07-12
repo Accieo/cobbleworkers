@@ -97,5 +97,11 @@
   "text.autoconfig.cobbleworkers.option.diving.divingLootingCooldownSeconds": "Generation cooldown (in seconds)",
   "text.autoconfig.cobbleworkers.option.diving.lootTables": "Allowed loot tables",
   "text.autoconfig.cobbleworkers.option.diving.searchRadius": "Inventory search radius",
-  "text.autoconfig.cobbleworkers.option.diving.searchHeight": "Inventory search height"
+  "text.autoconfig.cobbleworkers.option.diving.searchHeight": "Inventory search height",
+  "text.autoconfig.cobbleworkers.option.groundItemGathering": "Item gathering",
+  "text.autoconfig.cobbleworkers.option.groundItemGathering.groundItemGatheringEnabled": "Item gatherers enabled",
+  "text.autoconfig.cobbleworkers.option.groundItemGathering.groundItemGatherers": "Item gatherer Pokémon",
+  "text.autoconfig.cobbleworkers.option.groundItemGathering.typeGathersGroundItems": "Pokémon type that gathers items",
+  "text.autoconfig.cobbleworkers.option.groundItemGathering.searchRadius": "Item gathering search radius",
+  "text.autoconfig.cobbleworkers.option.groundItemGathering.searchHeight": "Item gathering search height"
 }

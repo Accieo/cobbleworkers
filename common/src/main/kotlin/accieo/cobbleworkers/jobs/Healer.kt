@@ -21,7 +21,6 @@ import net.minecraft.world.World
 
 object Healer : Worker {
     private val VALID_SPECIES: Set<String> = setOf("happiny", "chansey", "blissey")
-    private val VALID_MOVES: Set<String> = setOf("wish", "softboiled", "moonlight", "recover", "roost", "healbell", "aromatherapy", "synthesis", "rest", "lifedew")
     private val config = CobbleworkersConfigHolder.config.healing
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
@@ -121,6 +120,6 @@ object Healer : Worker {
      * Checks if the Pokémon qualifies as a healer because of its moves.
      */
     private fun doesPokemonKnowHealingMove(pokemonEntity: PokemonEntity): Boolean {
-        return pokemonEntity.pokemon.moveSet.getMoves().any { it.name in VALID_MOVES }
+        return pokemonEntity.pokemon.moveSet.getMoves().any { it.name in config.healingMoves }
     }
 }

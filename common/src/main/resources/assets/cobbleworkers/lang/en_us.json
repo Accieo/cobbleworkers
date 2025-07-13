@@ -115,6 +115,7 @@
   "text.autoconfig.cobbleworkers.option.healing.healersEnabled": "Healers enabled",
   "text.autoconfig.cobbleworkers.option.healing.healers": "Healer Pokémon",
   "text.autoconfig.cobbleworkers.option.healing.chanseyLineHealsPlayers": "Chansey line heals players",
+  "text.autoconfig.cobbleworkers.option.healing.healingMoves": "Moves that make Pokémon a healer",
   "text.autoconfig.cobbleworkers.option.healing.regenDurationSeconds": "Regeneration effect duration (in seconds)",
   "text.autoconfig.cobbleworkers.option.healing.regenAmplifier": "Regeneration amplifier (I, II)",
   "text.autoconfig.cobbleworkers.option.healing.searchRadius": "Healing search radius",

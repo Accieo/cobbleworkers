@@ -309,6 +309,18 @@ class CobbleworkersConfig : ConfigData {
     class HealingGroup {
         var healersEnabled = true
         var healers: MutableList<String> = mutableListOf("pikachu")
+        var healingMoves: MutableList<String> = mutableListOf(
+            "wish",
+            "softboiled",
+            "moonlight",
+            "recover",
+            "roost",
+            "healbell",
+            "aromatherapy",
+            "synthesis",
+            "rest",
+            "lifedew"
+        )
         var chanseyLineHealsPlayers = true
         var regenDurationSeconds = 20
 

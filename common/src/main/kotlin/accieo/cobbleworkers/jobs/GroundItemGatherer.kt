@@ -113,7 +113,7 @@ object GroundItemGatherer : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestItemPos, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestItemPos, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestItemPos, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestItemPos, world)
             }
             return
@@ -127,7 +127,7 @@ object GroundItemGatherer : Worker {
             val stack = closestItem.stack.copy()
             closestItem.discard()
             heldItemsByPokemon[pokemonId] = listOf(stack)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 

@@ -126,7 +126,7 @@ object BerryHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestBerry, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestBerry, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestBerry, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBerry, world)
             }
             return
@@ -138,7 +138,7 @@ object BerryHarvester : Worker {
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestBerry(world, closestBerry, pokemonEntity)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 
@@ -153,7 +153,7 @@ object BerryHarvester : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.isIn(BERRIES_TAG) && state.get(BerryBlock.AGE) == BerryBlock.FRUIT_AGE) {
+            if (state.isIn(BERRIES_TAG) && state.get(BerryBlock.AGE) == BerryBlock.FRUIT_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq

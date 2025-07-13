@@ -58,7 +58,7 @@ object WaterGenerator : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestCauldron, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestCauldron, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestCauldron, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestCauldron, world)
             }
             return
@@ -71,7 +71,7 @@ object WaterGenerator : Worker {
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             CobbleworkersCauldronUtils.addFluid(world, closestCauldron, CobbleworkersCauldronUtils.CauldronFluid.WATER)
             lastGenerationTime[pokemonId] = now
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 

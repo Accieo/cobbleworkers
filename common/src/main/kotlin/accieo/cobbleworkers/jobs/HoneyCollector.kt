@@ -124,7 +124,7 @@ object HoneyCollector : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestBeehive, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestBeehive, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestBeehive, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBeehive, world)
             }
             return true
@@ -136,7 +136,7 @@ object HoneyCollector : Worker {
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestHoneycomb(world, closestBeehive, pokemonEntity)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
 
         return true
@@ -191,7 +191,7 @@ object HoneyCollector : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is BeehiveBlock) {
+            if (state.block is BeehiveBlock && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val level = state.get(BeehiveBlock.HONEY_LEVEL)
                 if (honeyLevelPredicate(level)) {
                     val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)

@@ -61,7 +61,7 @@ object BrewingStandFuelGenerator : Worker {
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
             val blockEntity = world.getBlockEntity(pos)
-            if (state.block is BrewingStandBlock && blockEntity is BrewingStandBlockEntity) {
+            if (state.block is BrewingStandBlock && blockEntity is BrewingStandBlockEntity && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val accessor = blockEntity as BrewingStandBlockEntityAccessor
                 if (accessor.fuel < BrewingStandBlockEntity.MAX_FUEL_USES) {
                     val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
@@ -93,7 +93,7 @@ object BrewingStandFuelGenerator : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestFurnace, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestFurnace, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestFurnace, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFurnace, world)
             }
             return
@@ -106,7 +106,7 @@ object BrewingStandFuelGenerator : Worker {
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestFurnace)) {
             addBurnTime(world, closestFurnace)
             lastGenerationTime[pokemonId] = now
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 

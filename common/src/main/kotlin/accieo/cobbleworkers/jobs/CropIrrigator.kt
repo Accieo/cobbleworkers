@@ -48,7 +48,7 @@ object CropIrrigator : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null || currentTarget != closestFarmland) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestFarmland, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestFarmland, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestFarmland, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFarmland, world)
             }
             return
@@ -65,7 +65,7 @@ object CropIrrigator : Worker {
                farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
                Block.NOTIFY_LISTENERS
             )
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 

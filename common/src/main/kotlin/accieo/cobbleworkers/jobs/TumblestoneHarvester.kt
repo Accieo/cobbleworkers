@@ -130,7 +130,7 @@ object TumblestoneHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestTumblestone, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestTumblestone, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestTumblestone, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestTumblestone, world)
             }
             return
@@ -142,7 +142,7 @@ object TumblestoneHarvester : Worker {
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
             harvestTumblestone(world, closestTumblestone, pokemonEntity)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 
@@ -157,7 +157,7 @@ object TumblestoneHarvester : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.block in VALID_TUMBLESTONE_BLOCKS) {
+            if (state.block in VALID_TUMBLESTONE_BLOCKS && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq

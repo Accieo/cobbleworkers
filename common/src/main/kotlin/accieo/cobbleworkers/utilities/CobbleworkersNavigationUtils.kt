@@ -20,11 +20,14 @@ import java.util.UUID
  */
 object CobbleworkersNavigationUtils {
     private data class Claim(val pokemonId: UUID, val claimTick: Long)
+    private data class ExpiredTarget(val pos: BlockPos, val expiryTick: Long)
     private val pokemonToTarget = mutableMapOf<UUID, BlockPos>()
     private val targetedBlocks = mutableMapOf<BlockPos, Claim>()
     private val pokemonToPlayerTarget = mutableMapOf<UUID, UUID>()
     private val targetedPlayers = mutableMapOf<UUID, Claim>()
-    private const val CLAIM_TIMEOUT_TICKS = 300L
+    private val recentlyExpiredTargets = mutableMapOf<BlockPos, ExpiredTarget>()
+    private const val CLAIM_TIMEOUT_TICKS = 140L
+    private const val EXPIRED_TARGET_TIMEOUT_TICKS = 300L
 
     /**
      * Checks if the Pokémon's bounding box intersects with the target block area.
@@ -71,7 +74,7 @@ object CobbleworkersNavigationUtils {
      */
     fun claimTarget(pokemonId: UUID, target: BlockPos, world: World) {
         releaseExpiredClaims(world)
-        releaseTarget(pokemonId)
+        releaseTarget(pokemonId, world)
 
         val immutableTarget = target.toImmutable()
         pokemonToTarget[pokemonId] = immutableTarget
@@ -92,10 +95,11 @@ object CobbleworkersNavigationUtils {
     /**
      * Releases the target for a given Pokémon, making it available for others.
      */
-    fun releaseTarget(pokemonId: UUID) {
+    fun releaseTarget(pokemonId: UUID, world: World) {
         val releasedTarget = pokemonToTarget.remove(pokemonId)
         if (releasedTarget != null) {
             targetedBlocks.remove(releasedTarget)
+            recentlyExpiredTargets[releasedTarget] = ExpiredTarget(releasedTarget, world.time)
         }
     }
 
@@ -159,8 +163,18 @@ object CobbleworkersNavigationUtils {
         }
 
         expiredPokemon.forEach {
-            releaseTarget(it)
+            releaseTarget(it, world)
             releasePlayerTarget(it)
         }
+
+        recentlyExpiredTargets.entries.removeIf { now - it.value.expiryTick > EXPIRED_TARGET_TIMEOUT_TICKS }
+    }
+
+    /**
+     * Checks if a block is in the recently expired targets.
+     */
+    fun isRecentlyExpired(pos: BlockPos, world: World): Boolean {
+        releaseExpiredClaims(world)
+        return recentlyExpiredTargets.containsKey(pos)
     }
 }

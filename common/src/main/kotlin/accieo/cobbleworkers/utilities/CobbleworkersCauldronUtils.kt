@@ -29,7 +29,7 @@ object CobbleworkersCauldronUtils {
         val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.isOf(Blocks.CAULDRON)) {
+            if (state.isOf(Blocks.CAULDRON) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = origin.getSquaredDistance(pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq

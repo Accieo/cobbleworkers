@@ -59,7 +59,7 @@ object Healer : Worker {
         val pokemonId = pokemonEntity.pokemon.uuid
         val nearbyPlayers = findNearbyPlayers(world, origin)
         if (nearbyPlayers.isEmpty()) {
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
             return
         }
 

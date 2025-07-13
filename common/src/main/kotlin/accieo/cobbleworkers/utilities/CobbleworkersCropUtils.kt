@@ -54,7 +54,7 @@ object CobbleworkersCropUtils {
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
             val block = state.block
-            if (block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 2) {
+            if (block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 2 && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = origin.getSquaredDistance(pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq
@@ -77,7 +77,7 @@ object CobbleworkersCropUtils {
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
             val block = state.block
-            if (block in VALID_CROP_BLOCKS && isMatureCrop(world, pos)) {
+            if (block in VALID_CROP_BLOCKS && isMatureCrop(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = origin.getSquaredDistance(pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq
@@ -105,7 +105,7 @@ object CobbleworkersCropUtils {
         val drops = blockState.getDroppedStacks(lootParams)
 
         if (drops.isNotEmpty()) {
-            pokemonHeldItems[pokemonEntity.uuid] = drops
+            pokemonHeldItems[pokemonEntity.pokemon.uuid] = drops
         }
 
         val newState = if (config.shouldReplantCrops) {

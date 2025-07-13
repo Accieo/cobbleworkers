@@ -118,7 +118,7 @@ object NetherwartHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestNetherwart, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestNetherwart, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestNetherwart, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestNetherwart, world)
             }
             return
@@ -130,7 +130,7 @@ object NetherwartHarvester : Worker {
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestNetherwart(world, closestNetherwart, pokemonEntity)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 
@@ -145,7 +145,7 @@ object NetherwartHarvester : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is NetherWartBlock && state.get(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE) {
+            if (state.block is NetherWartBlock && state.get(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq

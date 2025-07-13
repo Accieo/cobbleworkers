@@ -59,7 +59,7 @@ object FuelGenerator : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is AbstractFurnaceBlock && !state.get(AbstractFurnaceBlock.LIT)) {
+            if (state.block is AbstractFurnaceBlock && !state.get(AbstractFurnaceBlock.LIT) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq
@@ -88,7 +88,7 @@ object FuelGenerator : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestFurnace, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestFurnace, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestFurnace, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFurnace, world)
             }
             return
@@ -101,7 +101,7 @@ object FuelGenerator : Worker {
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestFurnace)) {
             addBurnTime(world, closestFurnace)
             lastGenerationTime[pokemonId] = now
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 

@@ -119,7 +119,7 @@ object MintHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestMint, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestMint, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestMint, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestMint, world)
             }
             return
@@ -131,7 +131,7 @@ object MintHarvester : Worker {
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             harvestApricorn(world, closestMint, pokemonEntity)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 
@@ -146,7 +146,7 @@ object MintHarvester : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.isIn(MINTS_TAG) && state.get(MintBlock.AGE) == MintBlock.MATURE_AGE) {
+            if (state.isIn(MINTS_TAG) && state.get(MintBlock.AGE) == MintBlock.MATURE_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
                 val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
                 if (distanceSq < closestDistance) {
                     closestDistance = distanceSq

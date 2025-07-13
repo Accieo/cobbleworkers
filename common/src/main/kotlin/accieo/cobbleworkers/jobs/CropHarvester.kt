@@ -118,7 +118,7 @@ object CropHarvester : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestCrop, world)) {
+            if (!CobbleworkersNavigationUtils.isTargeted(closestCrop, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestCrop, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestCrop, world)
             }
             return
@@ -130,7 +130,7 @@ object CropHarvester : Worker {
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
             CobbleworkersCropUtils.harvestCrop(world, closestCrop, pokemonEntity, heldItemsByPokemon, config)
-            CobbleworkersNavigationUtils.releaseTarget(pokemonId)
+            CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }
     }
 

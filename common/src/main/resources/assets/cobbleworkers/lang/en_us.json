@@ -127,5 +127,13 @@
   "text.autoconfig.cobbleworkers.option.fuel.burnTimeSeconds": "Burn time added (in seconds)",
   "text.autoconfig.cobbleworkers.option.fuel.typeGeneratesFuel": "Pokémon type that generates fuel",
   "text.autoconfig.cobbleworkers.option.fuel.searchRadius": "Furnace search radius",
-  "text.autoconfig.cobbleworkers.option.fuel.searchHeight": "Furnace search height"
+  "text.autoconfig.cobbleworkers.option.fuel.searchHeight": "Furnace search height",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel": "Brewing stand fuel generation",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.fuelGeneratorsEnabled": "Brewing stand fuel generators enabled",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.fuelGenerators": "Brewing stand fuel generator Pokémon",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.fuelGenerationCooldownSeconds": "Generation cooldown (in seconds)",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.addedFuel": "Fuel added",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.typeGeneratesFuel": "Pokémon type that generates brewing stand fuel",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.searchRadius": "Brewing stand search radius",
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.searchHeight": "Brewing stand search height"
 }

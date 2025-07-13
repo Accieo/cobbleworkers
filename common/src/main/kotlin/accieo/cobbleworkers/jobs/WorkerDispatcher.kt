@@ -33,7 +33,8 @@ object WorkerDispatcher {
         GroundItemGatherer,
         NetherwartHarvester,
         Healer,
-        FuelGenerator
+        FuelGenerator,
+        BrewingStandFuelGenerator
     )
 
     fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {

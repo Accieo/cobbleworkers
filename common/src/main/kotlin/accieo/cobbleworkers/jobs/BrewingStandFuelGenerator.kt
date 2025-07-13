@@ -10,20 +10,21 @@ package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
-import accieo.cobbleworkers.mixin.AbstractFurnaceBlockEntityAccessor
+import accieo.cobbleworkers.mixin.BrewingStandBlockEntityAccessor
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
-import net.minecraft.block.AbstractFurnaceBlock
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity
+import net.minecraft.block.Block
+import net.minecraft.block.BrewingStandBlock
+import net.minecraft.block.entity.BrewingStandBlockEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 import kotlin.text.lowercase
 
-object FuelGenerator : Worker {
-    private val config = CobbleworkersConfigHolder.config.fuel
+object BrewingStandFuelGenerator : Worker {
+    private val config = CobbleworkersConfigHolder.config.brewingStandFuel
     private val cooldownTicks get() = config.fuelGenerationCooldownSeconds * 20L
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
@@ -49,9 +50,9 @@ object FuelGenerator : Worker {
     }
 
     /**
-     * Finds closest furnace nearby.
+     * Finds closest brewing stand nearby.
      */
-    private fun findClosestFurnace(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
+    private fun findClosestBrewingStand(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
 
@@ -59,11 +60,15 @@ object FuelGenerator : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is AbstractFurnaceBlock && !state.get(AbstractFurnaceBlock.LIT)) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
+            val blockEntity = world.getBlockEntity(pos)
+            if (state.block is BrewingStandBlock && blockEntity is BrewingStandBlockEntity) {
+                val accessor = blockEntity as BrewingStandBlockEntityAccessor
+                if (accessor.fuel < BrewingStandBlockEntity.MAX_FUEL_USES) {
+                    val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
+                    if (distanceSq < closestDistance) {
+                        closestDistance = distanceSq
+                        closestPos = pos.toImmutable()
+                    }
                 }
             }
         }
@@ -72,11 +77,11 @@ object FuelGenerator : Worker {
     }
 
     /**
-     * Handles logic for finding a furnace and adding fuel.
+     * Handles logic for finding a brewing stand and adding fuel.
      */
     private fun handleFuelGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestFurnace = findClosestFurnace(world, origin, pokemonEntity) ?: return
+        val closestFurnace = findClosestBrewingStand(world, origin, pokemonEntity) ?: return
 
         val now = world.time
         val lastTime = lastGenerationTime[pokemonId] ?: 0L
@@ -106,18 +111,16 @@ object FuelGenerator : Worker {
     }
 
     /**
-     * Adds burn time to a furnace.
+     * Adds burn time to a brewing stand.
      */
-    private fun addBurnTime(world: World, furnacePos: BlockPos) {
-        val blockEntity = world.getBlockEntity(furnacePos)
-        if (blockEntity is AbstractFurnaceBlockEntity) {
-            val accessor = blockEntity as AbstractFurnaceBlockEntityAccessor
-            val addedBurnTime = (config.burnTimeSeconds * 20).coerceAtMost(20000) // Max. is lava bucket level
-            accessor.setBurnTime(addedBurnTime)
-            accessor.setFuelTime(addedBurnTime)
-            world.setBlockState(furnacePos, world.getBlockState(furnacePos).with(AbstractFurnaceBlock.LIT, true))
-            blockEntity.markDirty()
-        }
+    private fun addBurnTime(world: World, standPos: BlockPos) {
+        val blockEntity = world.getBlockEntity(standPos)
+        if (blockEntity !is BrewingStandBlockEntity) return
+        val accessor = blockEntity as BrewingStandBlockEntityAccessor
+        val addedFuel = (accessor.fuel + config.addedFuel).coerceAtMost(BrewingStandBlockEntity.MAX_FUEL_USES)
+        accessor.setFuel(addedFuel)
+        blockEntity.markDirty()
+        world.updateListeners(standPos, world.getBlockState(standPos), world.getBlockState(standPos), Block.NOTIFY_ALL)
     }
 
     /**

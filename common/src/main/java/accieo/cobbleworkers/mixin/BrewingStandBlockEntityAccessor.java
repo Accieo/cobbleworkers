@@ -8,15 +8,15 @@
 
 package accieo.cobbleworkers.mixin;
 
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.block.entity.BrewingStandBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AbstractFurnaceBlockEntity.class)
-public interface AbstractFurnaceBlockEntityAccessor {
-    @Accessor("burnTime")
-    void setBurnTime(int burnTime);
+@Mixin(BrewingStandBlockEntity.class)
+public interface BrewingStandBlockEntityAccessor {
+    @Accessor("fuel")
+    int getFuel();
 
-    @Accessor("fuelTime")
-    void setFuelTime(int fuelTime);
+    @Accessor("fuel")
+    void setFuel(int fuel);
 }

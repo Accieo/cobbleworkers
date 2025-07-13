@@ -47,6 +47,8 @@
   "text.autoconfig.cobbleworkers.option.honey": "Honey collecting",
   "text.autoconfig.cobbleworkers.option.honey.honeyCollectorsEnabled": "Honey collectors enabled",
   "text.autoconfig.cobbleworkers.option.honey.combeeLineCollectsHoney": "Combee line harvests honey",
+  "text.autoconfig.cobbleworkers.option.honey.combeeLineGeneratesHoney": "Combee line generates honey",
+  "text.autoconfig.cobbleworkers.option.honey.honeyGenerationCooldownSeconds": "Generation cooldown (in seconds)",
   "text.autoconfig.cobbleworkers.option.honey.honeyCollectors": "Honey collector Pokémon",
   "text.autoconfig.cobbleworkers.option.honey.typeHarvestsHoney": "Pokémon type that harvests honey",
   "text.autoconfig.cobbleworkers.option.honey.searchRadius": "Honey search radius",

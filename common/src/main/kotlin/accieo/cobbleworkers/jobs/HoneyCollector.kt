@@ -33,6 +33,8 @@ object HoneyCollector : Worker {
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
     private val config = CobbleworkersConfigHolder.config.honey
+    private val lastGenerationTime = mutableMapOf<UUID, Long>()
+    private val cooldownTicks get() = config.honeyGenerationCooldownSeconds * 20L
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
 
@@ -59,7 +61,9 @@ object HoneyCollector : Worker {
 
         if (heldItems.isNullOrEmpty()) {
             failedDepositLocations.remove(pokemonId)
-            handleHarvesting(world, origin, pokemonEntity)
+            if (!handleHarvesting(world, origin, pokemonEntity)) {
+                handleGeneration(world, origin, pokemonEntity)
+            }
         } else {
             handleDepositing(world, origin, pokemonEntity, heldItems)
         }
@@ -114,16 +118,16 @@ object HoneyCollector : Worker {
     /**
      * Handles logic for finding and collecting honeycomb when the Pokémon is not holding items.
      */
-    private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+    private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): Boolean {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestBeehive = findClosestReadyBeehive(world, origin, pokemonEntity) ?: return
+        val closestBeehive = findClosestReadyBeehive(world, origin, pokemonEntity) ?: return false
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
             if (!CobbleworkersNavigationUtils.isTargeted(closestBeehive, world)) {
                 CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBeehive, world)
             }
-            return
+            return true
         }
 
         if (currentTarget == closestBeehive) {
@@ -134,12 +138,52 @@ object HoneyCollector : Worker {
             harvestHoneycomb(world, closestBeehive, pokemonEntity)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId)
         }
+
+        return true
+    }
+
+    /**
+     * Handles logic to increase honey level by one.
+     */
+    private fun generateHoney(world: World, beehivePos: BlockPos, pokemonEntity: PokemonEntity) {
+        val state = world.getBlockState(beehivePos)
+        val block = state.block
+        if (block is BeehiveBlock) {
+            val currentLevel = state.get(BeehiveBlock.HONEY_LEVEL)
+            if (currentLevel < BeehiveBlock.FULL_HONEY_LEVEL) {
+                world.setBlockState(beehivePos, state.with(BeehiveBlock.HONEY_LEVEL, currentLevel + 1), Block.NOTIFY_ALL)
+            }
+        }
+    }
+
+    /**
+     * Handles generation of honey.
+     */
+    private fun handleGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+        if (!config.combeeLineGeneratesHoney) return
+
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val now = world.time
+        val lastTime = lastGenerationTime[pokemonId] ?: 0L
+
+        if (now - lastTime < cooldownTicks) {
+            return
+        }
+
+        val closestBeehive = findClosestNonReadyBeehive(world, origin, pokemonEntity) ?: return
+
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestBeehive.down(), 2.0)) {
+            generateHoney(world, closestBeehive, pokemonEntity)
+            lastGenerationTime[pokemonId] = now
+        } else {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestBeehive.down())
+        }
     }
 
     /**
      * Scans the pasture's block surrounding area for the closest beehive.
      */
-    private fun findClosestReadyBeehive(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
+    private fun findClosestBeehive(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, honeyLevelPredicate: (Int) -> Boolean): BlockPos? {
         var closestPos: BlockPos? = null
         var closestDistance = Double.MAX_VALUE
 
@@ -147,16 +191,33 @@ object HoneyCollector : Worker {
 
         BlockPos.stream(searchArea).forEach { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is BeehiveBlock && state.get(BeehiveBlock.HONEY_LEVEL) == BeehiveBlock.FULL_HONEY_LEVEL) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
+            if (state.block is BeehiveBlock) {
+                val level = state.get(BeehiveBlock.HONEY_LEVEL)
+                if (honeyLevelPredicate(level)) {
+                    val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
+                    if (distanceSq < closestDistance) {
+                        closestDistance = distanceSq
+                        closestPos = pos.toImmutable()
+                    }
                 }
             }
         }
 
         return closestPos
+    }
+
+    /**
+     * Finds closest ready beehive.
+     */
+    private fun findClosestReadyBeehive(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
+        return findClosestBeehive(world, origin, pokemonEntity) { it == BeehiveBlock.FULL_HONEY_LEVEL }
+    }
+
+    /**
+     * Finds closest non-ready beehive.
+     */
+    private fun findClosestNonReadyBeehive(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
+        return findClosestBeehive(world, origin, pokemonEntity) { it < BeehiveBlock.FULL_HONEY_LEVEL }
     }
 
     /**

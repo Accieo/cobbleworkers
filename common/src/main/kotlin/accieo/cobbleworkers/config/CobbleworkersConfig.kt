@@ -166,6 +166,9 @@ class CobbleworkersConfig : ConfigData {
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsHoney: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.NONE
 
+        var combeeLineGeneratesHoney = true
+        var honeyGenerationCooldownSeconds: Long = 120
+
         /* Dangerous settings: It can highly impact server performance! */
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
         var searchRadius = 8

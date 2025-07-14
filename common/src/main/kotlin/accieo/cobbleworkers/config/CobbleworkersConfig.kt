@@ -72,6 +72,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var brewingStandFuel = BrewingStandFuelGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var extinguisher = ExtinguisherGroup()
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
@@ -368,6 +371,20 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesFuel: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.DRAGON
+
+        /* Dangerous settings: It can highly impact server performance! */
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 3
+    }
+
+    class ExtinguisherGroup {
+        var extinguishersEnabled = true
+        var extinguishers: MutableList<String> = mutableListOf("pikachu")
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeExtinguishesFire: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
 
         /* Dangerous settings: It can highly impact server performance! */
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)

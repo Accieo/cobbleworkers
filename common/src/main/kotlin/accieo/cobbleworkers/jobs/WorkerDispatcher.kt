@@ -34,7 +34,8 @@ object WorkerDispatcher {
         NetherwartHarvester,
         Healer,
         FuelGenerator,
-        BrewingStandFuelGenerator
+        BrewingStandFuelGenerator,
+        FireExtinguisher
     )
 
     fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {

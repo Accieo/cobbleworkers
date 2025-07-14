@@ -137,5 +137,11 @@
   "text.autoconfig.cobbleworkers.option.brewingStandFuel.addedFuel": "Fuel added",
   "text.autoconfig.cobbleworkers.option.brewingStandFuel.typeGeneratesFuel": "Pokémon type that generates brewing stand fuel",
   "text.autoconfig.cobbleworkers.option.brewingStandFuel.searchRadius": "Brewing stand search radius",
-  "text.autoconfig.cobbleworkers.option.brewingStandFuel.searchHeight": "Brewing stand search height"
+  "text.autoconfig.cobbleworkers.option.brewingStandFuel.searchHeight": "Brewing stand search height",
+  "text.autoconfig.cobbleworkers.option.extinguisher": "Fire extinguishers",
+  "text.autoconfig.cobbleworkers.option.extinguisher.extinguishersEnabled": "Fire extinguishers enabled",
+  "text.autoconfig.cobbleworkers.option.extinguisher.extinguishers": "Fire extinguisher Pokémono",
+  "text.autoconfig.cobbleworkers.option.extinguisher.typeExtinguishesFire": "Pokémon type that extinguishes fire",
+  "text.autoconfig.cobbleworkers.option.extinguisher.searchRadius": "Fire search radius",
+  "text.autoconfig.cobbleworkers.option.extinguisher.searchHeight": "Fire search height"
 }

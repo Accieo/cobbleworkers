@@ -17,7 +17,6 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.AbstractFurnaceBlock
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 import kotlin.text.lowercase
@@ -52,23 +51,10 @@ object FuelGenerator : Worker {
      * Finds closest furnace nearby.
      */
     private fun findClosestFurnace(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-
-        BlockPos.stream(searchArea).forEach { pos ->
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is AbstractFurnaceBlock && !state.get(AbstractFurnaceBlock.LIT) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block is AbstractFurnaceBlock && !state.get(AbstractFurnaceBlock.LIT) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**

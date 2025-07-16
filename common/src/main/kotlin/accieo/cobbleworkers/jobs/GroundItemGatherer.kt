@@ -108,7 +108,7 @@ object GroundItemGatherer : Worker {
      */
     private fun handleGathering(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val (closestItemPos, closestItem) = findClosestItem(world, origin, pokemonEntity) ?: return
+        val (closestItemPos, closestItem) = findClosestItem(world, origin) ?: return
 
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
@@ -134,24 +134,10 @@ object GroundItemGatherer : Worker {
     /**
      * Finds the closest item on the ground and returns its position and entity.
      */
-    private fun findClosestItem(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): Pair<BlockPos, ItemEntity>? {
-        var closestItem: ItemEntity? = null
-        var closestDistance = Double.MAX_VALUE
-
+    private fun findClosestItem(world: World, origin: BlockPos): Pair<BlockPos, ItemEntity>? {
         val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
         val items = world.getEntitiesByClass(ItemEntity::class.java, searchArea) { true }
-
-        for (item in items) {
-            if (item.isOnGround) {
-                val distanceSq = item.squaredDistanceTo(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestItem = item
-                }
-            }
-        }
-
-        return closestItem?.let { it.blockPos to it }
+        return items.find { item -> item.isOnGround }?.let { it.blockPos to it }
     }
 
     /**

@@ -114,7 +114,7 @@ object NetherwartHarvester : Worker {
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestNetherwart = findClosestNetherwart(world, origin, pokemonEntity) ?: return
+        val closestNetherwart = findClosestNetherwart(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
@@ -137,24 +137,11 @@ object NetherwartHarvester : Worker {
     /**
      * Scans the pasture's block surrounding area for the closest mature nether wart.
      */
-    private fun findClosestNetherwart(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-
-        BlockPos.stream(searchArea).forEach { pos ->
+    private fun findClosestNetherwart(world: World, origin: BlockPos): BlockPos? {
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            if (state.block is NetherWartBlock && state.get(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block is NetherWartBlock && state.get(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**

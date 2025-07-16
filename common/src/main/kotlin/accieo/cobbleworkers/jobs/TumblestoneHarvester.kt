@@ -22,10 +22,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.server.world.ServerWorld
-import net.minecraft.state.property.DirectionProperty
 import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 
@@ -126,7 +124,7 @@ object TumblestoneHarvester : Worker {
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestTumblestone = findClosestTumblestone(world, origin, pokemonEntity) ?: return
+        val closestTumblestone = findClosestTumblestone(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
@@ -149,24 +147,11 @@ object TumblestoneHarvester : Worker {
     /**
      * Scans the pasture's block surrounding area for the closest tumblestone cluster.
      */
-    private fun findClosestTumblestone(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-
-        BlockPos.stream(searchArea).forEach { pos ->
+    private fun findClosestTumblestone(world: World, origin: BlockPos): BlockPos? {
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            if (state.block in VALID_TUMBLESTONE_BLOCKS && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block in VALID_TUMBLESTONE_BLOCKS && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**

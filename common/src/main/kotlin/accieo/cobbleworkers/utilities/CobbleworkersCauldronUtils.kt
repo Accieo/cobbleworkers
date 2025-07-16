@@ -11,7 +11,6 @@ package accieo.cobbleworkers.utilities
 import net.minecraft.block.Blocks
 import net.minecraft.block.LeveledCauldronBlock
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 
 object CobbleworkersCauldronUtils {
@@ -23,22 +22,10 @@ object CobbleworkersCauldronUtils {
      * Finds the closest empty cauldron
      */
     fun findClosestCauldron(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-        BlockPos.stream(searchArea).forEach { pos ->
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            if (state.isOf(Blocks.CAULDRON) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = origin.getSquaredDistance(pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.isOf(Blocks.CAULDRON) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**

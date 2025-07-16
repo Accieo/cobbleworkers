@@ -47,46 +47,20 @@ object CobbleworkersCropUtils {
      * Finds the closest dry farmland
      */
     fun findClosestFarmland(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-        BlockPos.stream(searchArea).forEach { pos ->
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            val block = state.block
-            if (block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 2 && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = origin.getSquaredDistance(pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 2 && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**
      * Finds the closest crop
      */
     fun findClosestCrop(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-        BlockPos.stream(searchArea).forEach { pos ->
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            val block = state.block
-            if (block in VALID_CROP_BLOCKS && isMatureCrop(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = origin.getSquaredDistance(pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block in VALID_CROP_BLOCKS && isMatureCrop(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**

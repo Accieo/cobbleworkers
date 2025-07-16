@@ -22,7 +22,6 @@ import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 import kotlin.text.lowercase
@@ -118,7 +117,7 @@ object AmethystHarvester : Worker {
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestAmethyst = findClosestAmethystCluster(world, origin, pokemonEntity) ?: return
+        val closestAmethyst = findClosestAmethystCluster(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
@@ -141,24 +140,11 @@ object AmethystHarvester : Worker {
     /**
      * Scans the pasture's block surrounding area for the closest amethyst cluster.
      */
-    private fun findClosestAmethystCluster(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-
-        BlockPos.stream(searchArea).forEach { pos ->
+    private fun findClosestAmethystCluster(world: World, origin: BlockPos): BlockPos? {
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            if (state.block == Blocks.AMETHYST_CLUSTER && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block == Blocks.AMETHYST_CLUSTER && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+        }.orElse(null)
     }
 
     /**

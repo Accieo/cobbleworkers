@@ -18,7 +18,6 @@ import net.minecraft.block.Block
 import net.minecraft.block.BrewingStandBlock
 import net.minecraft.block.entity.BrewingStandBlockEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 import kotlin.text.lowercase
@@ -52,28 +51,15 @@ object BrewingStandFuelGenerator : Worker {
     /**
      * Finds closest brewing stand nearby.
      */
-    private fun findClosestBrewingStand(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-
-        BlockPos.stream(searchArea).forEach { pos ->
+    private fun findClosestBrewingStand(world: World, origin: BlockPos): BlockPos? {
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
             val blockEntity = world.getBlockEntity(pos)
-            if (state.block is BrewingStandBlock && blockEntity is BrewingStandBlockEntity && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)) {
-                val accessor = blockEntity as BrewingStandBlockEntityAccessor
-                if (accessor.fuel < BrewingStandBlockEntity.MAX_FUEL_USES) {
-                    val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                    if (distanceSq < closestDistance) {
-                        closestDistance = distanceSq
-                        closestPos = pos.toImmutable()
-                    }
-                }
-            }
-        }
-
-        return closestPos
+            state.block is BrewingStandBlock &&
+                    blockEntity is BrewingStandBlockEntity &&
+                    !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world) &&
+                    (blockEntity as BrewingStandBlockEntityAccessor).fuel < BrewingStandBlockEntity.MAX_FUEL_USES
+        }.orElse(null)
     }
 
     /**
@@ -81,7 +67,7 @@ object BrewingStandFuelGenerator : Worker {
      */
     private fun handleFuelGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestFurnace = findClosestBrewingStand(world, origin, pokemonEntity) ?: return
+        val closestFurnace = findClosestBrewingStand(world, origin) ?: return
 
         val now = world.time
         val lastTime = lastGenerationTime[pokemonId] ?: 0L

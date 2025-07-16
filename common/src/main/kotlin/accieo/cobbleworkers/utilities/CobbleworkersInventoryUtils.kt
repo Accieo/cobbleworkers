@@ -16,7 +16,6 @@ import net.minecraft.block.entity.ChestBlockEntity
 import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 
 object CobbleworkersInventoryUtils {
@@ -37,27 +36,11 @@ object CobbleworkersInventoryUtils {
      * Finds closest inventory
      */
     fun findClosestInventory(world: World, origin: BlockPos, searchRadius: Int, verticalRange: Int, ignorePos: Set<BlockPos> = emptySet()): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), verticalRange.toDouble(), searchRadius.toDouble())
-        BlockPos.stream(searchArea).forEach { pos ->
-            if (pos in ignorePos) {
-                return@forEach
-            }
-
-            val block = world.getBlockState(pos).block
-            val blockEntity = world.getBlockEntity(pos)
-            if (block in VALID_INVENTORY_BLOCKS && blockEntity is Inventory) {
-                val distanceSq = origin.getSquaredDistance(pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+        return BlockPos.findClosest(origin, searchRadius, verticalRange) { pos ->
+            pos !in ignorePos &&
+                    world.getBlockState(pos).block in VALID_INVENTORY_BLOCKS &&
+                    world.getBlockEntity(pos) is Inventory
+        }.orElse(null)
     }
 
     /**

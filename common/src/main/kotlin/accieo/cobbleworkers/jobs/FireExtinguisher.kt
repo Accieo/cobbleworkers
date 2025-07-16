@@ -11,7 +11,6 @@ package accieo.cobbleworkers.jobs
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.interfaces.Worker
 import net.minecraft.block.Blocks
-import net.minecraft.util.math.Box
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
@@ -47,7 +46,7 @@ object FireExtinguisher : Worker {
      */
     private fun handleFireExtinguishing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestFire = findClosestFire(world, origin, pokemonEntity) ?: return
+        val closestFire = findClosestFire(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
@@ -70,24 +69,11 @@ object FireExtinguisher : Worker {
     /**
      * Finds the closest fire block.
      */
-    private fun findClosestFire(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): BlockPos? {
-        var closestPos: BlockPos? = null
-        var closestDistance = Double.MAX_VALUE
-
-        val searchArea = Box(origin).expand(searchRadius.toDouble(), searchHeight.toDouble(), searchRadius.toDouble())
-
-        BlockPos.stream(searchArea).forEach { pos ->
+    private fun findClosestFire(world: World, origin: BlockPos): BlockPos? {
+        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
             val state = world.getBlockState(pos)
-            if (state.block == Blocks.FIRE) {
-                val distanceSq = pos.getSquaredDistance(pokemonEntity.pos)
-                if (distanceSq < closestDistance) {
-                    closestDistance = distanceSq
-                    closestPos = pos.toImmutable()
-                }
-            }
-        }
-
-        return closestPos
+            state.block == Blocks.FIRE
+        }.orElse(null)
     }
 
     /**

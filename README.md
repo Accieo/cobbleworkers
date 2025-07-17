@@ -12,19 +12,6 @@ Cobbleworkers is a companion server-side mod for Cobblemon `1.6.1` that turns th
 
 ![cobbleworkers-infographic](/common/src/main/resources/assets/cobbleworkers/infographic/infographic.png)
 
-By default
-- **Crop Irrigation** – Water-types keep crops hydrated.
-- **Crop Harvesting** – Grass-types assist with crop harvesting.
-- **Berry Collection** – Grass-types assist with berry harvesting.
-- **Apricorn Harvesting** – Bug-types pick apricorns for you.
-- **Amethyst Mining** – Rock-types collect amethyst clusters nearby.
-- **Tumblestone Harvesting** – Steel-types collect tumblestone.
-- **Honey Collection** – The combee line gathers honeycombs from beehives.
-- **Mint Harvesting** - Fairy-types harvest mints.
-- **Lava generation** - Fire-types generate lava on empty cauldrons.
-- **Water generation** - Water-types generate water on empty cauldrons.
-- **Powder snow generation** - Ice-types generate powder snow on empty cauldrons.
-
 Pokémon will automatically place all of the items in inventories nearby!
 
 ## Configuration

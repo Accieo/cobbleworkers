@@ -20,12 +20,12 @@ import net.minecraft.block.CarrotsBlock
 import net.minecraft.block.CropBlock
 import net.minecraft.block.FarmlandBlock
 import net.minecraft.block.PotatoesBlock
+import net.minecraft.block.SweetBerryBushBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 
@@ -38,6 +38,7 @@ object CobbleworkersCropUtils {
         Blocks.BEETROOTS,
         Blocks.CARROTS,
         Blocks.WHEAT,
+        Blocks.SWEET_BERRY_BUSH,
         CobblemonBlocks.REVIVAL_HERB,
         CobblemonBlocks.MEDICINAL_LEEK,
         CobblemonBlocks.VIVICHOKE_SEEDS
@@ -82,19 +83,21 @@ object CobbleworkersCropUtils {
             pokemonHeldItems[pokemonEntity.pokemon.uuid] = drops
         }
 
-        val newState = if (config.shouldReplantCrops) {
-            when (blockState.block) {
-                Blocks.POTATOES -> blockState.with(PotatoesBlock.AGE, 0)
-                Blocks.BEETROOTS -> blockState.with(BeetrootsBlock.AGE, 0)
-                Blocks.CARROTS -> blockState.with(CarrotsBlock.AGE, 0)
-                Blocks.WHEAT -> blockState.with(CropBlock.AGE, 0)
-                CobblemonBlocks.REVIVAL_HERB -> blockState.with(RevivalHerbBlock.AGE, RevivalHerbBlock.MIN_AGE)
-                CobblemonBlocks.MEDICINAL_LEEK -> blockState.with(MedicinalLeekBlock.AGE, 0)
-                CobblemonBlocks.VIVICHOKE_SEEDS -> Blocks.AIR.defaultState
-                else -> return
-            }
-        } else {
-            Blocks.AIR.defaultState
+        val newState = when {
+            config.shouldReplantCrops ->
+                when (blockState.block) {
+                    Blocks.POTATOES -> blockState.with(PotatoesBlock.AGE, 0)
+                    Blocks.BEETROOTS -> blockState.with(BeetrootsBlock.AGE, 0)
+                    Blocks.CARROTS -> blockState.with(CarrotsBlock.AGE, 0)
+                    Blocks.WHEAT -> blockState.with(CropBlock.AGE, 0)
+                    Blocks.SWEET_BERRY_BUSH -> blockState.with(SweetBerryBushBlock.AGE, 1)
+                    CobblemonBlocks.REVIVAL_HERB -> blockState.with(RevivalHerbBlock.AGE, RevivalHerbBlock.MIN_AGE)
+                    CobblemonBlocks.MEDICINAL_LEEK -> blockState.with(MedicinalLeekBlock.AGE, 0)
+                    CobblemonBlocks.VIVICHOKE_SEEDS -> Blocks.AIR.defaultState
+                    else -> return
+                }
+            blockState.block == Blocks.SWEET_BERRY_BUSH -> blockState.with(SweetBerryBushBlock.AGE, 1)
+            else -> Blocks.AIR.defaultState
         }
 
         world.setBlockState(blockPos, newState)
@@ -109,6 +112,7 @@ object CobbleworkersCropUtils {
 
         return when (block) {
             is CropBlock -> block.getAge(state) == block.maxAge
+            is SweetBerryBushBlock -> state.get(SweetBerryBushBlock.AGE) == SweetBerryBushBlock.MAX_AGE
             else -> false
         }
     }

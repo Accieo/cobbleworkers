@@ -17,6 +17,8 @@ import net.minecraft.block.BeetrootsBlock
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.CarrotsBlock
+import net.minecraft.block.CaveVines
+import net.minecraft.block.CaveVinesBodyBlock
 import net.minecraft.block.CropBlock
 import net.minecraft.block.FarmlandBlock
 import net.minecraft.block.PotatoesBlock
@@ -39,6 +41,8 @@ object CobbleworkersCropUtils {
         Blocks.CARROTS,
         Blocks.WHEAT,
         Blocks.SWEET_BERRY_BUSH,
+        Blocks.CAVE_VINES,
+        Blocks.CAVE_VINES_PLANT,
         CobblemonBlocks.REVIVAL_HERB,
         CobblemonBlocks.MEDICINAL_LEEK,
         CobblemonBlocks.VIVICHOKE_SEEDS
@@ -91,12 +95,16 @@ object CobbleworkersCropUtils {
                     Blocks.CARROTS -> blockState.with(CarrotsBlock.AGE, 0)
                     Blocks.WHEAT -> blockState.with(CropBlock.AGE, 0)
                     Blocks.SWEET_BERRY_BUSH -> blockState.with(SweetBerryBushBlock.AGE, 1)
+                    Blocks.CAVE_VINES -> blockState.with(CaveVinesBodyBlock.BERRIES, false)
+                    Blocks.CAVE_VINES_PLANT -> blockState.with(CaveVinesBodyBlock.BERRIES, false)
                     CobblemonBlocks.REVIVAL_HERB -> blockState.with(RevivalHerbBlock.AGE, RevivalHerbBlock.MIN_AGE)
                     CobblemonBlocks.MEDICINAL_LEEK -> blockState.with(MedicinalLeekBlock.AGE, 0)
                     CobblemonBlocks.VIVICHOKE_SEEDS -> Blocks.AIR.defaultState
                     else -> return
                 }
             blockState.block == Blocks.SWEET_BERRY_BUSH -> blockState.with(SweetBerryBushBlock.AGE, 1)
+            blockState.block == Blocks.CAVE_VINES -> blockState.with(CaveVinesBodyBlock.BERRIES, false)
+            blockState.block == Blocks.CAVE_VINES_PLANT -> blockState.with(CaveVinesBodyBlock.BERRIES, false)
             else -> Blocks.AIR.defaultState
         }
 
@@ -112,6 +120,7 @@ object CobbleworkersCropUtils {
 
         return when (block) {
             is CropBlock -> block.getAge(state) == block.maxAge
+            is CaveVines -> state.get(CaveVinesBodyBlock.BERRIES)
             is SweetBerryBushBlock -> state.get(SweetBerryBushBlock.AGE) == SweetBerryBushBlock.MAX_AGE
             else -> false
         }

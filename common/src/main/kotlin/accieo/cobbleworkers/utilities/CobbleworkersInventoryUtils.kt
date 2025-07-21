@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 object CobbleworkersInventoryUtils {
-    private val VALID_INVENTORY_BLOCKS: Set<Block> = setOf(
+    private val validInventoryBlocks: MutableSet<Block> = mutableSetOf(
         Blocks.CHEST,
         Blocks.TRAPPED_CHEST,
         Blocks.BARREL,
@@ -33,13 +33,19 @@ object CobbleworkersInventoryUtils {
     )
 
     /**
+     * Add inventory integrations dynamically at runtime
+     */
+    fun addCompatibility(externalBlocks: Set<Block>) {
+        validInventoryBlocks.addAll(externalBlocks)
+    }
+
+    /**
      * Finds closest inventory
      */
     fun findClosestInventory(world: World, origin: BlockPos, searchRadius: Int, verticalRange: Int, ignorePos: Set<BlockPos> = emptySet()): BlockPos? {
         return BlockPos.findClosest(origin, searchRadius, verticalRange) { pos ->
             pos !in ignorePos &&
-                    world.getBlockState(pos).block in VALID_INVENTORY_BLOCKS &&
-                    world.getBlockEntity(pos) is Inventory
+                    world.getBlockState(pos).block in validInventoryBlocks
         }.orElse(null)
     }
 
@@ -51,8 +57,13 @@ object CobbleworkersInventoryUtils {
         val world = inventory.world ?: return inventory
         val pos = inventory.pos
         val state = world.getBlockState(pos)
-        val block = state.block as? ChestBlock ?: return inventory
-        return ChestBlock.getInventory(block, state, world, pos, true) ?: inventory
+        val block = state.block
+
+        if (block is ChestBlock) {
+            return ChestBlock.getInventory(block, state, world, pos, true) ?: inventory
+        }
+
+        return inventory
     }
 
     /**

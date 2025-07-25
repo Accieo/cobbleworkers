@@ -9,8 +9,9 @@
 package accieo.cobbleworkers.neoforge
 
 import accieo.cobbleworkers.Cobbleworkers
+import accieo.cobbleworkers.integration.CobbleworkersIntegrationHandler
 import accieo.cobbleworkers.neoforge.client.config.CobbleworkersModListScreen
-import accieo.cobbleworkers.neoforge.integration.CobbleworkersIntegrationHandler
+import accieo.cobbleworkers.neoforge.integration.NeoForgeIntegrationHelper
 import net.minecraft.client.MinecraftClient
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.common.Mod
@@ -51,6 +52,7 @@ object CobbleworkersNeoForge {
 
     @SubscribeEvent
     fun onCommonSetup(event: FMLCommonSetupEvent) {
-        CobbleworkersIntegrationHandler.addIntegrations()
+        val integrationHandler = CobbleworkersIntegrationHandler(NeoForgeIntegrationHelper)
+        integrationHandler.addIntegrations()
     }
 }

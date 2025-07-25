@@ -6,19 +6,19 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package accieo.cobbleworkers.neoforge.integration
+package accieo.cobbleworkers.integration
 
 import accieo.cobbleworkers.Cobbleworkers
+import accieo.cobbleworkers.interfaces.ModIntegrationHelper
 import accieo.cobbleworkers.utilities.CobbleworkersCropUtils
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import net.minecraft.block.Block
 import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
-import net.neoforged.fml.ModList
 
-object CobbleworkersIntegrationHandler {
-    private const val FARMERS_DELIGHT = "farmersdelight"
-    private const val SOPHISTICATED_STORAGE = "sophisticatedstorage"
+class CobbleworkersIntegrationHandler(private val helper: ModIntegrationHelper) {
+    private val FARMERS_DELIGHT = "farmersdelight"
+    private val SOPHISTICATED_STORAGE = "sophisticatedstorage"
 
     /**
      * Runs all relevant functions to add integrations
@@ -26,13 +26,6 @@ object CobbleworkersIntegrationHandler {
     fun addIntegrations() {
         addFarmersDelight()
         addSophisticatedStorage()
-    }
-
-    /**
-     * Checks whether a mod is loaded
-     */
-    private fun isModLoaded(modId: String): Boolean {
-        return ModList.get().isLoaded(modId)
     }
 
     /**
@@ -48,7 +41,7 @@ object CobbleworkersIntegrationHandler {
      * Adds integration for farmer's delight
      */
     private fun addFarmersDelight() {
-        if (!isModLoaded(FARMERS_DELIGHT)) return
+        if (!helper.isModLoaded(FARMERS_DELIGHT)) return
 
         val farmersDelightCrops = getModBlocks(
             FARMERS_DELIGHT,
@@ -66,7 +59,7 @@ object CobbleworkersIntegrationHandler {
         // TODO: This is a work in progress, not yet implemented.
         return
 
-        if (!isModLoaded(SOPHISTICATED_STORAGE)) return
+        if (!helper.isModLoaded(SOPHISTICATED_STORAGE)) return
 
         val sophisticatedStorageBlocks = getModBlocks(
             SOPHISTICATED_STORAGE,

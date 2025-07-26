@@ -1,0 +1,7 @@
+Base mod:
+Grass types now harvest sweet berry bushes
+Grass types now harvest glow berries
+Honey bottles can be crafted with 1x glass bottle and 3x honeycombs
+
+Integration:
+Grass types also harvest farmer's delight crops

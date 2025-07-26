@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.utilities
 
 import accieo.cobbleworkers.config.CobbleworkersConfig
+import accieo.cobbleworkers.integration.FarmersDelightBlocks
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.block.MedicinalLeekBlock
 import com.cobblemon.mod.common.block.RevivalHerbBlock
@@ -48,13 +49,6 @@ object CobbleworkersCropUtils {
         CobblemonBlocks.REVIVAL_HERB,
         CobblemonBlocks.MEDICINAL_LEEK,
         CobblemonBlocks.VIVICHOKE_SEEDS
-    )
-
-    val farmersDelightCrops = listOf(
-        "onions",
-        "cabbages",
-        "tomatoes",
-        "rice_panicles"
     )
 
     /**
@@ -106,10 +100,11 @@ object CobbleworkersCropUtils {
         val block = blockState.block
         val blockId = Registries.BLOCK.getId(block).path
 
-        /** Integration stuff **/ // TODO: Improve this?
-        val isFarmersDelightCrop = blockId in farmersDelightCrops
-        val isTomato = blockId == "tomatoes"
-        val isRice = blockId == "rice_panicles"
+        /** Integration stuff **/
+        val isFarmersDelightCrop = blockId in FarmersDelightBlocks.ALL
+        val isTomato = blockId == FarmersDelightBlocks.TOMATOES
+        val isRice = blockId == FarmersDelightBlocks.RICE_PANICLES
+        val isMushroomColony = blockId in FarmersDelightBlocks.MUSHROOMS
 
         val newState = when {
             config.shouldReplantCrops ->
@@ -117,6 +112,7 @@ object CobbleworkersCropUtils {
                     /** Farmer's delight **/
                     isRice && blockState.contains(AGE_3) -> Blocks.AIR.defaultState
                     isTomato && blockState.contains(AGE_3) -> blockState.with(AGE_3, 0)
+                    isMushroomColony && blockState.contains(AGE_3) -> blockState.with(AGE_3, 0)
                     isFarmersDelightCrop && blockState.contains(CropBlock.AGE) -> blockState.with(CropBlock.AGE, 0)
                     /** Vanilla **/
                     block == Blocks.POTATOES -> blockState.with(PotatoesBlock.AGE, 0)
@@ -147,11 +143,13 @@ object CobbleworkersCropUtils {
     private fun isMatureCrop(world: World, pos: BlockPos): Boolean {
         val state = world.getBlockState(pos)
         val block = state.block
+        val blockId = Registries.BLOCK.getId(block).path
 
-        return when (block) {
-            is CropBlock -> block.getAge(state) == block.maxAge
-            is CaveVines -> state.get(CaveVinesBodyBlock.BERRIES)
-            is SweetBerryBushBlock -> state.get(SweetBerryBushBlock.AGE) == SweetBerryBushBlock.MAX_AGE
+        return when {
+            block is CropBlock -> block.getAge(state) == block.maxAge
+            block is CaveVines -> state.get(CaveVinesBodyBlock.BERRIES)
+            block is SweetBerryBushBlock -> state.get(SweetBerryBushBlock.AGE) == SweetBerryBushBlock.MAX_AGE
+            blockId in FarmersDelightBlocks.MUSHROOMS && state.contains(AGE_3) -> state.get(AGE_3) == 3
             else -> false
         }
     }

@@ -45,7 +45,7 @@ class CobbleworkersIntegrationHandler(private val helper: ModIntegrationHelper) 
 
         val farmersDelightCrops = getModBlocks(
             FARMERS_DELIGHT,
-            CobbleworkersCropUtils.farmersDelightCrops
+            FarmersDelightBlocks.ALL.toList()
         )
 
         CobbleworkersCropUtils.addCompatibility(farmersDelightCrops)

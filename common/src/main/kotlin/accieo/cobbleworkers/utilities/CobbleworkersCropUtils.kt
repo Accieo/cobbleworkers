@@ -8,8 +8,12 @@
 
 package accieo.cobbleworkers.utilities
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfig
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.integration.FarmersDelightBlocks
+import accieo.cobbleworkers.jobs.CropHarvester
+import accieo.cobbleworkers.jobs.CropIrrigator
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.block.MedicinalLeekBlock
 import com.cobblemon.mod.common.block.RevivalHerbBlock
@@ -38,7 +42,7 @@ import java.util.UUID
  * Utility functions for crop related stuff
  */
 object CobbleworkersCropUtils {
-    private val validCropBlocks: MutableSet<Block> = mutableSetOf(
+    val validCropBlocks: MutableSet<Block> = mutableSetOf(
         Blocks.POTATOES,
         Blocks.BEETROOTS,
         Blocks.CARROTS,
@@ -61,21 +65,30 @@ object CobbleworkersCropUtils {
     /**
      * Finds the closest dry farmland
      */
-    fun findClosestFarmland(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block == Blocks.FARMLAND && state.get(FarmlandBlock.MOISTURE) <= 2 && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+    fun findClosestFarmland(world: World, origin: BlockPos): BlockPos? {
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, JobType.CropIrrigator)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                val state = world.getBlockState(pos)
+                CropIrrigator.blockValidator(world, pos) && state.get(FarmlandBlock.MOISTURE) <= 2 && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**
      * Finds the closest crop
      */
-    fun findClosestCrop(world: World, origin: BlockPos, searchRadius: Int, searchHeight: Int): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block in validCropBlocks && isMatureCrop(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+    fun findClosestCrop(world: World, origin: BlockPos): BlockPos? {
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, JobType.CropHarvester)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                CropHarvester.blockValidator(world, pos) && isMatureCrop(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

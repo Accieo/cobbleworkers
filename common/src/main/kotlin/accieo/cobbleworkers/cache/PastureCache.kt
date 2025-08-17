@@ -6,27 +6,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package accieo.cobbleworkers.utilities
+package accieo.cobbleworkers.cache
 
 import accieo.cobbleworkers.enums.JobType
 import net.minecraft.util.math.BlockPos
 
-// TODO: Implement this
-object CobbleworkersTargetCacheManager {
+data class PastureCache(
     val targetsByJob: MutableMap<JobType, MutableSet<BlockPos>> =
         JobType.entries.associateWith { mutableSetOf<BlockPos>() }.toMutableMap()
-
-    /**
-     * Adds a target block for the given job type.
-     */
-    fun addTarget(jobType: JobType, pos: BlockPos) {
-        targetsByJob[jobType]?.add(pos)
-    }
-
-    /**
-     * Adds a target block for the given job type.
-     */
-    fun removeTarget(jobType: JobType, pos: BlockPos) {
-        targetsByJob[jobType]?.remove(pos)
-    }
-}
+)

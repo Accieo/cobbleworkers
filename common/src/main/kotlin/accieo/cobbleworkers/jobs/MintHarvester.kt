@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -35,6 +37,12 @@ object MintHarvester : Worker {
     private val config = CobbleworkersConfigHolder.config.mints
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.MintHarvester
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.isIn(MINTS_TAG)
+    }
 
     /**
      * Determines if Pokémon is eligible to be a mint harvester.
@@ -138,10 +146,15 @@ object MintHarvester : Worker {
      * Scans the pasture's block surrounding area for the closest mature mint.
      */
     private fun findClosestReadyMint(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.isIn(MINTS_TAG) && state.get(MintBlock.AGE) == MintBlock.MATURE_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                val state = world.getBlockState(pos)
+                blockValidator(world, pos) && state.get(MintBlock.AGE) == MintBlock.MATURE_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

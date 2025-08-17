@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -36,6 +38,12 @@ object HoneyCollector : Worker {
     private val cooldownTicks get() = config.honeyGenerationCooldownSeconds * 20L
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.HoneyCollector
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block is BeehiveBlock
+    }
 
     /**
      * Determines if Pokémon is eligible to be a honey collector.
@@ -119,7 +127,9 @@ object HoneyCollector : Worker {
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity): Boolean {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestBeehive = findClosestReadyBeehive(world, origin) ?: return false
+        val closestBeehive = findClosestBeehive(world, origin) { world, pos ->
+            world.getBlockState(pos).get(BeehiveBlock.HONEY_LEVEL) == BeehiveBlock.FULL_HONEY_LEVEL
+        } ?: return false
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
@@ -169,7 +179,9 @@ object HoneyCollector : Worker {
             return
         }
 
-        val closestBeehive = findClosestNonReadyBeehive(world, origin) ?: return
+        val closestBeehive = findClosestBeehive(world, origin) { world, pos ->
+            world.getBlockState(pos).get(BeehiveBlock.HONEY_LEVEL) < BeehiveBlock.FULL_HONEY_LEVEL
+        } ?: return
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestBeehive.down(), 2.0)) {
             generateHoney(world, closestBeehive)
@@ -182,27 +194,13 @@ object HoneyCollector : Worker {
     /**
      * Scans the pasture's block surrounding area for the closest beehive.
      */
-    private fun findClosestBeehive(world: World, origin: BlockPos, honeyLevelPredicate: (Int) -> Boolean): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block is BeehiveBlock &&
-                    !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world) &&
-                    honeyLevelPredicate(state.get(BeehiveBlock.HONEY_LEVEL))
-        }.orElse(null)
-    }
+    private fun findClosestBeehive(world: World, origin: BlockPos, predicate: (World, BlockPos) -> Boolean): BlockPos? {
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
 
-    /**
-     * Finds closest ready beehive.
-     */
-    private fun findClosestReadyBeehive(world: World, origin: BlockPos): BlockPos? {
-        return findClosestBeehive(world, origin) { it == BeehiveBlock.FULL_HONEY_LEVEL }
-    }
-
-    /**
-     * Finds closest non-ready beehive.
-     */
-    private fun findClosestNonReadyBeehive(world: World, origin: BlockPos): BlockPos? {
-        return findClosestBeehive(world, origin) { it < BeehiveBlock.FULL_HONEY_LEVEL }
+        return possibleTargets
+            .filter { pos -> predicate(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world) }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

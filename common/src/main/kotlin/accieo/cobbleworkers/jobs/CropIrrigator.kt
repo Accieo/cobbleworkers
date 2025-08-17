@@ -9,12 +9,14 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersCropUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
+import net.minecraft.block.Blocks
 import net.minecraft.block.FarmlandBlock
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -24,8 +26,12 @@ import net.minecraft.world.World
  */
 object CropIrrigator : Worker {
     private val config = CobbleworkersConfigHolder.config.irrigation
-    private val searchRadius get() = config.searchRadius
-    private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.CropIrrigator
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block == Blocks.FARMLAND
+    }
 
     /**
      * Determines if Pokémon is eligible to be a crop irrigator.
@@ -44,7 +50,7 @@ object CropIrrigator : Worker {
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin, searchRadius, searchHeight) ?: return
+        val closestFarmland = CobbleworkersCropUtils.findClosestFarmland(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null || currentTarget != closestFarmland) {

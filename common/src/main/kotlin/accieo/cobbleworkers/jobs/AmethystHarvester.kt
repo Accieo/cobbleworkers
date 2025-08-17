@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -36,6 +38,12 @@ object AmethystHarvester : Worker {
     private val config = CobbleworkersConfigHolder.config.amethyst
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.AmethystHarvester
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block == Blocks.AMETHYST_CLUSTER
+    }
 
     /**
      * Determines if Pokémon is eligible to be an amethyst harvester.
@@ -141,10 +149,14 @@ object AmethystHarvester : Worker {
      * Scans the pasture's block surrounding area for the closest amethyst cluster.
      */
     private fun findClosestAmethystCluster(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block == Blocks.AMETHYST_CLUSTER && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                blockValidator(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

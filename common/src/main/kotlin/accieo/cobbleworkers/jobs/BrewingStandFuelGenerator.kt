@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.mixin.BrewingStandBlockEntityAccessor
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -25,9 +27,14 @@ import kotlin.text.lowercase
 object BrewingStandFuelGenerator : Worker {
     private val config = CobbleworkersConfigHolder.config.brewingStandFuel
     private val cooldownTicks get() = config.fuelGenerationCooldownSeconds * 20L
-    private val searchRadius get() = config.searchRadius
-    private val searchHeight get() = config.searchHeight
     private val lastGenerationTime = mutableMapOf<UUID, Long>()
+
+    override val jobType: JobType = JobType.BrewingStandFuelGenerator
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        val blockEntity = world.getBlockEntity(pos)
+        state.block is BrewingStandBlock && blockEntity is BrewingStandBlockEntity
+    }
 
     /**
      * Determines if Pokémon is eligible to be a fuel generator.
@@ -52,14 +59,17 @@ object BrewingStandFuelGenerator : Worker {
      * Finds closest brewing stand nearby.
      */
     private fun findClosestBrewingStand(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            val blockEntity = world.getBlockEntity(pos)
-            state.block is BrewingStandBlock &&
-                    blockEntity is BrewingStandBlockEntity &&
-                    !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world) &&
-                    (blockEntity as BrewingStandBlockEntityAccessor).fuel < BrewingStandBlockEntity.MAX_FUEL_USES
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                val blockEntity = world.getBlockEntity(pos)
+                blockValidator(world, pos)
+                        && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+                        && (blockEntity as BrewingStandBlockEntityAccessor).fuel < BrewingStandBlockEntity.MAX_FUEL_USES
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

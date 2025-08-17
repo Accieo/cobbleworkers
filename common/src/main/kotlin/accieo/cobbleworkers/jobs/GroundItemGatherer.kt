@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -30,6 +31,9 @@ object GroundItemGatherer : Worker {
     private val config = CobbleworkersConfigHolder.config.groundItemGathering
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.GroundItemGatherer
+    override val blockValidator: ((World, BlockPos) -> Boolean)? = null
 
     /**
      * Determines if Pokémon is eligible to be a worker.

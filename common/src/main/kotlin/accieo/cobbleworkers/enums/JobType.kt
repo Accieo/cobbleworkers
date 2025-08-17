@@ -22,11 +22,9 @@ enum class JobType {
     GroundItemGatherer,
     Healer,
     HoneyCollector,
-    LavaGenerator,
     MintHarvester,
     NetherwartHarvester,
     PickUpLooter,
-    SnowGenerator,
     TumblestoneHarvester,
-    WaterGenerator
+    CauldronGenerator
 }

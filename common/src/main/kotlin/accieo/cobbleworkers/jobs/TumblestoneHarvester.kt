@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -43,6 +45,12 @@ object TumblestoneHarvester : Worker {
     private val config = CobbleworkersConfigHolder.config.tumblestone
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.TumblestoneHarvester
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block in VALID_TUMBLESTONE_BLOCKS
+    }
 
     /**
      * Determines if Pokémon is eligible to be a tumblestone harvester.
@@ -148,10 +156,15 @@ object TumblestoneHarvester : Worker {
      * Scans the pasture's block surrounding area for the closest tumblestone cluster.
      */
     private fun findClosestTumblestone(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block in VALID_TUMBLESTONE_BLOCKS && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                val state = world.getBlockState(pos)
+                blockValidator(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

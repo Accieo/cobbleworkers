@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -36,6 +37,9 @@ object PickUpLooter : Worker {
     private val lastGenerationTime = mutableMapOf<UUID, Long>()
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
+
+    override val jobType: JobType = JobType.PickUpLooter
+    override val blockValidator: ((World, BlockPos) -> Boolean)? = null
 
     /**
      * Determines if Pokémon is eligible to be a worker.

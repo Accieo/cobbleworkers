@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
@@ -24,6 +25,9 @@ object Healer : Worker {
     private val config = CobbleworkersConfigHolder.config.healing
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.Healer
+    override val blockValidator: ((World, BlockPos) -> Boolean)? = null
 
     /**
      * Determines if Pokémon is eligible to be a healer.

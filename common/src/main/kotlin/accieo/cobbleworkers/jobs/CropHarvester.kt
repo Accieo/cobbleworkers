@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersCropUtils
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
@@ -33,6 +34,12 @@ object CropHarvester : Worker {
     private val config = CobbleworkersConfigHolder.config.cropHarvest
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.CropHarvester
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block in CobbleworkersCropUtils.validCropBlocks
+    }
 
     /**
      * Determines if Pokémon is eligible to be a crop harvester.
@@ -114,7 +121,7 @@ object CropHarvester : Worker {
      */
     private fun handleHarvesting(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestCrop = CobbleworkersCropUtils.findClosestCrop(world, origin, searchRadius, searchHeight) ?: return
+        val closestCrop = CobbleworkersCropUtils.findClosestCrop(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {

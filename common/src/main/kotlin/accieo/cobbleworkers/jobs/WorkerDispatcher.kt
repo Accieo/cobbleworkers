@@ -8,6 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.enums.JobType
+import accieo.cobbleworkers.interfaces.Worker
+import accieo.cobbleworkers.utilities.DeferredBlockScanner
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -15,32 +18,61 @@ import kotlin.collections.filter
 import kotlin.collections.forEach
 
 object WorkerDispatcher {
-    private val workers = listOf(
+    /**
+     * Worker registry.
+     */
+    private val workers: List<Worker> = listOf(
         ApricornHarvester,
         AmethystHarvester,
-        TumblestoneHarvester,
-        CropIrrigator,
-        CropHarvester,
         BerryHarvester,
-        HoneyCollector,
-        MintHarvester,
-        LavaGenerator,
-        WaterGenerator,
-        SnowGenerator,
-        FishingLootGenerator,
-        PickUpLooter,
-        DiveLooter,
-        GroundItemGatherer,
-        NetherwartHarvester,
-        Healer,
-        FuelGenerator,
         BrewingStandFuelGenerator,
-        FireExtinguisher
+        CropHarvester,
+        CropIrrigator,
+        DiveLooter,
+        FireExtinguisher,
+        FishingLootGenerator,
+        FuelGenerator,
+        GroundItemGatherer,
+        Healer,
+        HoneyCollector,
+        LavaGenerator,
+        MintHarvester,
+        NetherwartHarvester,
+        PickUpLooter,
+        SnowGenerator,
+        TumblestoneHarvester,
+        WaterGenerator,
     )
 
-    fun tickAll(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
+    /**
+     * Gathers all block validators from registered workers.
+     */
+    private val jobValidators: Map<JobType, (World, BlockPos) -> Boolean> = workers
+        .mapNotNull { worker -> worker.blockValidator?.let { worker.jobType to it } }
+        .toMap()
+
+    /**
+     * Ticks the deferred block scanning for a single pasture.
+     * Called ONCE per pasture per tick.
+     */
+    fun tickAreaScan(world: World, pastureOrigin: BlockPos) {
+        // TODO: Get from config
+        DeferredBlockScanner.tickPastureAreaScan(
+            world,
+            pastureOrigin,
+            8,
+            5,
+            jobValidators
+        )
+    }
+
+    /**
+     * Ticks the action logic for a specific Pokémon.
+     * Called ONCE per Pokémon in the pasture per tick.
+     */
+    fun tickPokemon(world: World, pastureOrigin: BlockPos, pokemonEntity: PokemonEntity) {
         workers
             .filter { it.shouldRun(pokemonEntity) }
-            .forEach { it.tick(world, origin, pokemonEntity) }
+            .forEach { it.tick(world, pastureOrigin, pokemonEntity) }
     }
 }

@@ -8,11 +8,22 @@
 
 package accieo.cobbleworkers.interfaces
 
+import accieo.cobbleworkers.enums.JobType
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 interface Worker {
+    /**
+     * Holds information about the job type
+     */
+    val jobType: JobType
+
+    /**
+     * Check if a block is a valid target. Null if the job isn't block based.
+     */
+    val blockValidator: ((World, BlockPos) -> Boolean)?
+
     /**
      * Determines if Pokémon is eligible to be a worker.
      * NOTE: This is used to prevent running the tick method unnecessarily.

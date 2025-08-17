@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -46,6 +48,12 @@ object ApricornHarvester : Worker {
     private val config = CobbleworkersConfigHolder.config.apricorn
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.ApricornHarvester
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.isIn(APRICORNS_TAG)
+    }
 
     /**
      * Determines if Pokémon is eligible to be an apricorn harvester.
@@ -149,10 +157,15 @@ object ApricornHarvester : Worker {
      * Scans the pasture's block surrounding area for the closest mature apricorn.
      */
     private fun findClosestReadyApricorn(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.isIn(APRICORNS_TAG) && state.get(ApricornBlock.AGE) == ApricornBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                val state = world.getBlockState(pos)
+                blockValidator(world, pos) && state.get(ApricornBlock.AGE) == ApricornBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

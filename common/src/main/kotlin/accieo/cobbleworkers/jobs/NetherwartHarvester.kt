@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -23,7 +25,6 @@ import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import java.util.UUID
 import kotlin.collections.forEach
@@ -35,6 +36,13 @@ object NetherwartHarvester : Worker {
     private val config = CobbleworkersConfigHolder.config.netherwartHarvest
     private val searchRadius get() = config.searchRadius
     private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.NetherwartHarvester
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block is NetherWartBlock
+    }
+
 
     /**
      * Determines if Pokémon is eligible to be a harvester.
@@ -138,10 +146,15 @@ object NetherwartHarvester : Worker {
      * Scans the pasture's block surrounding area for the closest mature nether wart.
      */
     private fun findClosestNetherwart(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block is NetherWartBlock && state.get(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                val state = world.getBlockState(pos)
+                blockValidator(world, pos) && state.get(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

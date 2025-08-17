@@ -9,11 +9,13 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersCauldronUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
+import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import java.util.UUID
@@ -21,10 +23,14 @@ import kotlin.text.lowercase
 
 object SnowGenerator : Worker {
     private val config = CobbleworkersConfigHolder.config.snow
-    private val searchRadius get() = config.searchRadius
-    private val searchHeight get() = config.searchHeight
     private val cooldownTicks get() = config.snowGenerationCooldownSeconds * 20L
     private val lastGenerationTime = mutableMapOf<UUID, Long>()
+
+    override val jobType: JobType = JobType.CauldronGenerator
+    override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.isOf(Blocks.CAULDRON)
+    }
 
     /**
      * Determines if Pokémon is eligible to be a worker.
@@ -54,7 +60,7 @@ object SnowGenerator : Worker {
 
         if (now - lastTime < cooldownTicks) return
 
-        val closestCauldron = CobbleworkersCauldronUtils.findClosestCauldron(world, origin, searchRadius, searchHeight) ?: return
+        val closestCauldron = CobbleworkersCauldronUtils.findClosestCauldron(world, origin) ?: return
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {

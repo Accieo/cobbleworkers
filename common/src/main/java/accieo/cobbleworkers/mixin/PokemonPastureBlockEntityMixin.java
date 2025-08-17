@@ -29,6 +29,12 @@ public class PokemonPastureBlockEntityMixin {
 	private static void init(World world, BlockPos blockPos, BlockState blockState, PokemonPastureBlockEntity pastureBlock, CallbackInfo ci) {
 		if (world.isClient) return;
 
+		try {
+			WorkerDispatcher.INSTANCE.tickAreaScan(world, blockPos);
+		} catch (Exception e) {
+			Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher tickAreaScan", e);
+		}
+
 		pastureBlock.getTetheredPokemon().stream()
 				.filter(Objects::nonNull)
 				.forEach(tethering -> {
@@ -46,9 +52,9 @@ public class PokemonPastureBlockEntityMixin {
 					if (pokemonEntity == null) return;
 
 					try {
-						WorkerDispatcher.INSTANCE.tickAll(world, blockPos, pokemonEntity);
+						WorkerDispatcher.INSTANCE.tickPokemon(world, blockPos, pokemonEntity);
 					} catch (Exception e) {
-						Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher.tickAll {}", e.getMessage());
+						Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher.tickPokemon {}", e.getMessage());
 					}
 				});
 	}

@@ -8,7 +8,9 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import net.minecraft.block.Blocks
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -20,8 +22,12 @@ import kotlin.text.lowercase
 
 object FireExtinguisher : Worker {
     private val config = CobbleworkersConfigHolder.config.extinguisher
-    private val searchRadius get() = config.searchRadius
-    private val searchHeight get() = config.searchHeight
+
+    override val jobType: JobType = JobType.FireExtinguisher
+    override val blockValidator: ((World, BlockPos) -> Boolean) = {  world: World, pos: BlockPos ->
+        val state = world.getBlockState(pos)
+        state.block == Blocks.FIRE
+    }
 
     /**
      * Determines if Pokémon is eligible to be a worker.
@@ -70,10 +76,14 @@ object FireExtinguisher : Worker {
      * Finds the closest fire block.
      */
     private fun findClosestFire(world: World, origin: BlockPos): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, searchHeight) { pos ->
-            val state = world.getBlockState(pos)
-            state.block == Blocks.FIRE
-        }.orElse(null)
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, jobType)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                blockValidator(world, pos) && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**

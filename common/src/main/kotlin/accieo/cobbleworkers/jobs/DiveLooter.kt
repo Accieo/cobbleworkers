@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.jobs
 
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
+import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
@@ -37,6 +38,9 @@ object DiveLooter : Worker {
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
 
+    override val jobType: JobType = JobType.DiveLooter
+    override val blockValidator: ((World, BlockPos) -> Boolean)? = null
+
     /**
      * Determines if Pokémon is eligible to be a worker.
      * NOTE: This is used to prevent running the tick method unnecessarily.
@@ -53,7 +57,7 @@ object DiveLooter : Worker {
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        if (!pokemonEntity.isSubmergedInWater) return
+        if (!pokemonEntity.isTouchingWater) return
 
         val heldItems = heldItemsByPokemon[pokemonId]
 

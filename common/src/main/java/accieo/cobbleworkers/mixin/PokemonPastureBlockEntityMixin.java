@@ -9,6 +9,7 @@
 package accieo.cobbleworkers.mixin;
 
 import accieo.cobbleworkers.Cobbleworkers;
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager;
 import accieo.cobbleworkers.jobs.WorkerDispatcher;
 import com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
@@ -57,5 +58,14 @@ public class PokemonPastureBlockEntityMixin {
 						Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher.tickPokemon {}", e.getMessage());
 					}
 				});
+	}
+
+	@Inject(method = "onBroken()V", at = @At("TAIL"), remap = false)
+	private void onPastureBroken(CallbackInfo ci) {
+		PokemonPastureBlockEntity self = (PokemonPastureBlockEntity)(Object)this;
+		World world = self.getWorld();
+		if (world != null && !world.isClient) {
+			CobbleworkersCacheManager.INSTANCE.removePasture(self.getPos());
+		}
 	}
 }

@@ -26,5 +26,6 @@ enum class JobType {
     NetherwartHarvester,
     PickUpLooter,
     TumblestoneHarvester,
-    CauldronGenerator
+    CauldronGenerator,
+    Generic
 }

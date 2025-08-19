@@ -8,7 +8,10 @@
 
 package accieo.cobbleworkers.utilities
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
+import accieo.cobbleworkers.enums.JobType
 import com.cobblemon.mod.common.CobblemonBlocks
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.ChestBlock
@@ -17,6 +20,9 @@ import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import java.util.UUID
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
 
 object CobbleworkersInventoryUtils {
     private val validInventoryBlocks: MutableSet<Block> = mutableSetOf(
@@ -40,13 +46,25 @@ object CobbleworkersInventoryUtils {
     }
 
     /**
+     * Validates whether the block is a valid inventory block.
+     */
+    fun blockValidator(world: World, pos: BlockPos): Boolean {
+        val state = world.getBlockState(pos)
+        return state.block in validInventoryBlocks
+    }
+
+    /**
      * Finds closest inventory
      */
-    fun findClosestInventory(world: World, origin: BlockPos, searchRadius: Int, verticalRange: Int, ignorePos: Set<BlockPos> = emptySet()): BlockPos? {
-        return BlockPos.findClosest(origin, searchRadius, verticalRange) { pos ->
-            pos !in ignorePos &&
-                    world.getBlockState(pos).block in validInventoryBlocks
-        }.orElse(null)
+    fun findClosestInventory(world: World, origin: BlockPos, ignorePos: Set<BlockPos> = emptySet()): BlockPos? {
+        val possibleTargets = CobbleworkersCacheManager.getTargets(origin, JobType.Generic)
+        if (possibleTargets.isEmpty()) return null
+
+        return possibleTargets
+            .filter { pos ->
+                blockValidator(world, pos) && pos !in ignorePos
+            }
+            .minByOrNull { it.getSquaredDistance(origin) }
     }
 
     /**
@@ -147,5 +165,65 @@ object CobbleworkersInventoryUtils {
         }
 
         return stack
+    }
+
+    /**
+     * Handles depositing items into an inventory.
+     */
+    /**
+     * Handles logic for finding and depositing items into an inventory when the Pokémon is holding items.
+     * It will try multiple inventories nearby iteratively
+     */
+    fun handleDepositing(
+        world: World,
+        origin: BlockPos,
+        pokemonEntity: PokemonEntity,
+        itemsToDeposit: List<ItemStack>,
+        failedDepositLocations: MutableMap<UUID, MutableSet<BlockPos>>,
+        heldItemsByPokemon: MutableMap<UUID, List<ItemStack>>
+    ) {
+        val pokemonId = pokemonEntity.pokemon.uuid
+        val triedPositions = failedDepositLocations.getOrPut(pokemonId) { mutableSetOf() }
+        val inventoryPos = findClosestInventory(world, origin, triedPositions)
+
+        if (inventoryPos == null) {
+            // Don't drop items yet if scan is running as inventory might be found within the next ticks.
+            if (DeferredBlockScanner.isScanActive(origin)) {
+                heldItemsByPokemon[pokemonId] = itemsToDeposit
+                return
+            }
+
+            // No (untried) inventories found, so we just drop the remaining items and reset.
+            itemsToDeposit.forEach { stack -> Block.dropStack(world, pokemonEntity.blockPos, stack) }
+            heldItemsByPokemon.remove(pokemonId)
+            failedDepositLocations.remove(pokemonId)
+            return
+        }
+
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 2.0)) {
+            val inventory = world.getBlockEntity(inventoryPos) as? Inventory
+            if (inventory == null) {
+                // Block not an inventory, mark it as failed
+                triedPositions.add(inventoryPos)
+                return
+            }
+
+            val remainingDrops = insertStacks(inventory, itemsToDeposit)
+
+            if (remainingDrops.size == itemsToDeposit.size) {
+                //  No change in stack size, so mark as failed
+                triedPositions.add(inventoryPos)
+            }
+
+            if (remainingDrops.isNotEmpty()) {
+                heldItemsByPokemon[pokemonId] = remainingDrops
+            } else {
+                heldItemsByPokemon.remove(pokemonId)
+                failedDepositLocations.remove(pokemonId)
+                pokemonEntity.navigation.stop()
+            }
+        } else {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, inventoryPos)
+        }
     }
 }

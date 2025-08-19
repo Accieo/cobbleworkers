@@ -56,12 +56,9 @@ object WorkerDispatcher {
      * Called ONCE per pasture per tick.
      */
     fun tickAreaScan(world: World, pastureOrigin: BlockPos) {
-        // TODO: Get from config
         DeferredBlockScanner.tickPastureAreaScan(
             world,
             pastureOrigin,
-            8,
-            5,
             jobValidators
         )
     }

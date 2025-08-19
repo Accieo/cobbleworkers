@@ -23,8 +23,9 @@ import net.minecraft.world.World
 object Healer : Worker {
     private val VALID_SPECIES: Set<String> = setOf("happiny", "chansey", "blissey")
     private val config = CobbleworkersConfigHolder.config.healing
-    private val searchRadius get() = config.searchRadius
-    private val searchHeight get() = config.searchHeight
+    private val generalConfig = CobbleworkersConfigHolder.config.general
+    private val searchRadius get() = generalConfig.searchRadius
+    private val searchHeight get() = generalConfig.searchHeight
 
     override val jobType: JobType = JobType.Healer
     override val blockValidator: ((World, BlockPos) -> Boolean)? = null

@@ -39,8 +39,6 @@ object BerryHarvester : Worker {
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
     private val config = CobbleworkersConfigHolder.config.berries
-    private val searchRadius get() = config.searchRadius
-    private val searchHeight get() = config.searchHeight
 
     override val jobType: JobType = JobType.BerryHarvester
     override val blockValidator: ((World, BlockPos) -> Boolean) = { world: World, pos: BlockPos ->
@@ -73,57 +71,9 @@ object BerryHarvester : Worker {
             failedDepositLocations.remove(pokemonId)
             handleHarvesting(world, origin, pokemonEntity)
         } else {
-            handleDepositing(world, origin, pokemonEntity, heldItems)
+            CobbleworkersInventoryUtils.handleDepositing(world, origin, pokemonEntity, heldItems, failedDepositLocations, heldItemsByPokemon)
         }
     }
-
-    /**
-     * Handles logic for finding and depositing items into an inventory when the Pokémon is holding items.
-     * It will try multiple inventories nearby iteratively
-     */
-    private fun handleDepositing(world: World, origin: BlockPos, pokemonEntity: PokemonEntity, itemsToDeposit: List<ItemStack>) {
-        val pokemonId = pokemonEntity.pokemon.uuid
-        val triedPositions = failedDepositLocations.getOrPut(pokemonId) { mutableSetOf() }
-        val inventoryPos = CobbleworkersInventoryUtils.findClosestInventory(world, origin,
-            searchRadius,
-            searchHeight, triedPositions)
-
-        if (inventoryPos == null) {
-            // No (untried) inventories found, so we just drop the remaining items and reset.
-            itemsToDeposit.forEach { stack -> Block.dropStack(world, pokemonEntity.blockPos.toCenterPos().add(0.0, 0.5, 0.0).toBlockPos(), stack) }
-            heldItemsByPokemon.remove(pokemonId)
-            failedDepositLocations.remove(pokemonId)
-            return
-        }
-
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, inventoryPos, 2.0)) {
-            val inventory = world.getBlockEntity(inventoryPos) as? Inventory
-            if (inventory == null) {
-                // Block not an inventory, mark it as failed
-                triedPositions.add(inventoryPos)
-                return
-            }
-
-            val remainingDrops = CobbleworkersInventoryUtils.insertStacks(inventory, itemsToDeposit)
-
-            if (remainingDrops.size == itemsToDeposit.size) {
-                //  No change in stack size, so mark as failed
-                triedPositions.add(inventoryPos)
-            }
-
-            if (remainingDrops.isNotEmpty()) {
-                heldItemsByPokemon[pokemonId] = remainingDrops
-            } else {
-                heldItemsByPokemon.remove(pokemonId)
-                failedDepositLocations.remove(pokemonId)
-                pokemonEntity.navigation.stop()
-            }
-        } else {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, inventoryPos)
-        }
-    }
-
-
     /**
      * Handles logic for finding and harvesting a berry when the Pokémon is not holding items.
      */

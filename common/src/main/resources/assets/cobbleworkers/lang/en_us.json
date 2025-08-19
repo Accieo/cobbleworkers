@@ -1,5 +1,9 @@
 {
   "text.autoconfig.cobbleworkers.title": "Cobbleworkers config",
+  "text.autoconfig.cobbleworkers.option.general": "General settings",
+  "text.autoconfig.cobbleworkers.option.general.searchRadius": "Jobs search radius",
+  "text.autoconfig.cobbleworkers.option.general.searchHeight": "Jobs search height",
+  "text.autoconfig.cobbleworkers.option.general.blocksScannedPerTick": "Blocks scanned per tick per pasture",
   "text.autoconfig.cobbleworkers.option.apricorn": "Apricorn harvesting",
   "text.autoconfig.cobbleworkers.option.apricorn.apricornHarvestersEnabled": "Apricorn harvesters enabled",
   "text.autoconfig.cobbleworkers.option.apricorn.bugTypeHarvestsApricorns": "Bug type harvests apricorns",

@@ -16,6 +16,9 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry
 class CobbleworkersConfig : ConfigData {
 
     @ConfigEntry.Gui.CollapsibleObject
+    var general = GeneralGroup()
+
+    @ConfigEntry.Gui.CollapsibleObject
     var apricorn = ApricornGroup()
 
     @ConfigEntry.Gui.CollapsibleObject
@@ -75,18 +78,21 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var extinguisher = ExtinguisherGroup()
 
+    class GeneralGroup {
+        @ConfigEntry.BoundedDiscrete(min = 10, max = 30)
+        var blocksScannedPerTick = 15
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        var searchRadius = 8
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
+        var searchHeight = 5
+    }
+
     class ApricornGroup {
         var apricornHarvestersEnabled = true
         var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsApricorns: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.BUG
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class IrrigationGroup {
@@ -95,12 +101,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeIrrigatesCrops: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 2
     }
 
     class AmethystGroup {
@@ -109,12 +109,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsAmethyst: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.ROCK
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class TumblestoneGroup {
@@ -124,12 +118,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsTumblestone: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.STEEL
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class CropHarvestGroup {
@@ -139,12 +127,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsCrops: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GRASS
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 3
     }
 
     class BerriesGroup {
@@ -153,12 +135,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsBerries: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GRASS
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class HoneyGroup {
@@ -171,12 +147,6 @@ class CobbleworkersConfig : ConfigData {
 
         var combeeLineGeneratesHoney = true
         var honeyGenerationCooldownSeconds: Long = 120
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class MintsGroup {
@@ -185,12 +155,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsMints: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.FAIRY
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class LavaGroup {
@@ -200,12 +164,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesLava: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.FIRE
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class WaterGroup {
@@ -215,12 +173,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesWater: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class SnowGroup {
@@ -230,12 +182,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesSnow: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.ICE
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class FishingGroup {
@@ -246,12 +192,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesFishingLoot: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class PickUpGroup {
@@ -267,12 +207,6 @@ class CobbleworkersConfig : ConfigData {
             "cobblemon:sets/any_apricorn_seed",
             "cobblemon:villages/village_pokecenters",
         )
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class DivingGroup {
@@ -281,12 +215,6 @@ class CobbleworkersConfig : ConfigData {
         var lootTables: MutableList<String> = mutableListOf(
             "cobbleworkers:dive_treasure",
         )
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class GroundItemGathererGroup {
@@ -295,12 +223,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGathersGroundItems: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.PSYCHIC
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 5
     }
 
     class NetherwartGroup {
@@ -310,12 +232,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsNetherwart: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GHOST
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 3
     }
 
     class HealingGroup {
@@ -338,12 +254,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.BoundedDiscrete(min = 0, max = 1)
         var regenAmplifier = 0
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 3
     }
 
     class FuelGroup {
@@ -354,12 +264,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesFuel: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.FIRE
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 3
     }
 
     class BrewingStandFuelGroup {
@@ -371,12 +275,6 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGeneratesFuel: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.DRAGON
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 3
     }
 
     class ExtinguisherGroup {
@@ -385,11 +283,5 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeExtinguishesFire: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
-
-        /* Dangerous settings: It can highly impact server performance! */
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
-        var searchRadius = 8
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 8)
-        var searchHeight = 3
     }
 }

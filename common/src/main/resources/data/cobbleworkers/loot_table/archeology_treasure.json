@@ -1,0 +1,123 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.35
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:raw_copper",
+          "functions": [{ "function": "set_count", "count": { "min": 2, "max": 8 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:raw_iron",
+          "functions": [{ "function": "set_count", "count": { "min": 1, "max": 4 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:raw_gold",
+          "functions": [{ "function": "set_count", "count": { "min": 1, "max": 3 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:coal",
+          "functions": [{ "function": "set_count", "count": { "min": 3, "max": 6 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:charcoal",
+          "functions": [{ "function": "set_count", "count": { "min": 3, "max": 6 } }]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.45
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bone",
+          "functions": [{ "function": "set_count", "count": { "min": 2, "max": 3 } }]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.05
+        }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "cobblemon:armor_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:claw_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:cover_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:dome_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:fossilized_bird" },
+        { "type": "minecraft:item", "name": "cobblemon:fossilized_dino" },
+        { "type": "minecraft:item", "name": "cobblemon:fossilized_drake" },
+        { "type": "minecraft:item", "name": "cobblemon:fossilized_fish" },
+        { "type": "minecraft:item", "name": "cobblemon:helix_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:jaw_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:old_amber_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:plume_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:root_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:sail_fossil" },
+        { "type": "minecraft:item", "name": "cobblemon:skull_fossil" }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.15
+        }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "cobblemon:absorb_bulb" },
+        { "type": "minecraft:item", "name": "cobblemon:big_root" },
+        { "type": "minecraft:item", "name": "cobblemon:black_augurite" },
+        { "type": "minecraft:item", "name": "cobblemon:charcoal_stick" },
+        { "type": "minecraft:item", "name": "cobblemon:damp_rock" },
+        { "type": "minecraft:item", "name": "cobblemon:deep_sea_scale" },
+        { "type": "minecraft:item", "name": "cobblemon:deep_sea_tooth" },
+        { "type": "minecraft:item", "name": "cobblemon:dragon_fang" },
+        { "type": "minecraft:item", "name": "cobblemon:energy_root" },
+        { "type": "minecraft:item", "name": "cobblemon:everstone" },
+        { "type": "minecraft:item", "name": "cobblemon:fairy_feather" },
+        { "type": "minecraft:item", "name": "cobblemon:heat_rock" },
+        { "type": "minecraft:item", "name": "cobblemon:ice_stone" },
+        { "type": "minecraft:item", "name": "cobblemon:icy_rock" },
+        { "type": "minecraft:item", "name": "cobblemon:kings_rock" },
+        { "type": "minecraft:item", "name": "cobblemon:leaf_stone" },
+        { "type": "minecraft:item", "name": "cobblemon:mental_herb" },
+        { "type": "minecraft:item", "name": "cobblemon:mirror_herb" },
+        { "type": "minecraft:item", "name": "cobblemon:never_melt_ice" },
+        { "type": "minecraft:item", "name": "cobblemon:peat_block" },
+        { "type": "minecraft:item", "name": "cobblemon:power_herb" },
+        { "type": "minecraft:item", "name": "cobblemon:prism_scale" },
+        { "type": "minecraft:item", "name": "cobblemon:razor_claw" },
+        { "type": "minecraft:item", "name": "cobblemon:razor_fang" },
+        { "type": "minecraft:item", "name": "cobblemon:smooth_rock" },
+        { "type": "minecraft:item", "name": "cobblemon:sun_stone" },
+        { "type": "minecraft:item", "name": "cobblemon:vivichoke_seeds" },
+        { "type": "minecraft:item", "name": "cobblemon:water_stone" },
+        { "type": "minecraft:item", "name": "cobblemon:white_herb" }
+      ]
+    }
+  ]
+}

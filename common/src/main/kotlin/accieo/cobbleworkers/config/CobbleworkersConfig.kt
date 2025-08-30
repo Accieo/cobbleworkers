@@ -78,6 +78,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var extinguisher = ExtinguisherGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var archeology = ArcheologyGroup()
+
     class GeneralGroup {
         @ConfigEntry.BoundedDiscrete(min = 10, max = 30)
         var blocksScannedPerTick = 15
@@ -283,5 +286,19 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeExtinguishesFire: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
+    }
+
+    class ArcheologyGroup {
+        var archeologistsEnabled = true
+        var archeologists: MutableList<String> = mutableListOf("pikachu")
+
+        var archeologyLootingCooldownSeconds: Long = 80
+
+        var lootTables: MutableList<String> = mutableListOf(
+            "cobbleworkers:archeology_treasure",
+        )
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeDoesArcheology: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GROUND
     }
 }

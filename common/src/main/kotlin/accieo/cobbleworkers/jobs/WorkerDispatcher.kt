@@ -24,6 +24,7 @@ object WorkerDispatcher {
     private val workers: List<Worker> = listOf(
         ApricornHarvester,
         AmethystHarvester,
+        Archeologist,
         BerryHarvester,
         BrewingStandFuelGenerator,
         CropHarvester,

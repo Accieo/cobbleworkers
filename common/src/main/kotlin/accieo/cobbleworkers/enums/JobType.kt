@@ -11,6 +11,7 @@ package accieo.cobbleworkers.enums
 enum class JobType {
     AmethystHarvester,
     ApricornHarvester,
+    Archeologist,
     BerryHarvester,
     BrewingStandFuelGenerator,
     CropHarvester,

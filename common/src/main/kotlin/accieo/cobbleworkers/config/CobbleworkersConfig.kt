@@ -81,6 +81,9 @@ class CobbleworkersConfig : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     var archeology = ArcheologyGroup()
 
+    @ConfigEntry.Gui.CollapsibleObject
+    var scouts = ScoutGroup()
+
     class GeneralGroup {
         @ConfigEntry.BoundedDiscrete(min = 10, max = 30)
         var blocksScannedPerTick = 15
@@ -300,5 +303,31 @@ class CobbleworkersConfig : ConfigData {
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeDoesArcheology: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GROUND
+    }
+
+    class ScoutGroup {
+        var scoutsEnabled = true
+        var scouts: MutableList<String> = mutableListOf("pikachu")
+
+        var useAllStructures = true
+
+        var structureTags: MutableList<String> = mutableListOf(
+            "cobblemon:fishing_boat",
+            "cobblemon:fossil",
+            "cobblemon:gimmi_tower",
+            "cobblemon:ruin",
+            "cobblemon:shipwreck_cove",
+            "minecraft:mineshaft",
+            "minecraft:ocean_ruin",
+            "minecraft:on_ocean_explorer_maps",
+            "minecraft:on_treasure_maps",
+            "minecraft:on_trial_chambers_maps",
+            "minecraft:on_woodland_explorer_maps",
+            "minecraft:ruined_portal",
+            "minecraft:shipwreck",
+        )
+
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        var typeScouts: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.FLYING
     }
 }

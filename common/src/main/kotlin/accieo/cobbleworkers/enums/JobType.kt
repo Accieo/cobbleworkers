@@ -26,6 +26,7 @@ enum class JobType {
     MintHarvester,
     NetherwartHarvester,
     PickUpLooter,
+    Scout,
     TumblestoneHarvester,
     CauldronGenerator,
     Generic

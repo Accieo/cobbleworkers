@@ -8,7 +8,6 @@
 
 package accieo.cobbleworkers.jobs
 
-import accieo.cobbleworkers.Cobbleworkers
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
@@ -183,16 +182,18 @@ object Scout : Worker {
         }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
-            // TODO: Pokémon should only pick-up a single map
             if (closestItem.stack.item == Items.MAP) {
-                val stack = closestItem.stack.copy()
+                val singleItem = closestItem.stack.split(1)
 
-                closestItem.discard()
+                if (closestItem.stack.isEmpty) {
+                    closestItem.discard()
+                }
+
                 val map = createStructureMap(world as ServerWorld, origin)
                 if (map != null) {
                     heldItemsByPokemon[pokemonId] = listOf(map)
                 } else {
-                    heldItemsByPokemon[pokemonId] = listOf(stack)
+                    heldItemsByPokemon[pokemonId] = listOf(singleItem)
                 }
             }
             CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)

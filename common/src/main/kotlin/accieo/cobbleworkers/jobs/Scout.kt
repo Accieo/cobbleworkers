@@ -8,6 +8,7 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
@@ -27,7 +28,6 @@ import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.registry.entry.RegistryEntryList
-import net.minecraft.registry.tag.TagKey
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
@@ -41,11 +41,10 @@ import kotlin.text.lowercase
 object Scout : Worker {
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
-    private val config = CobbleworkersConfigHolder.config.scouts
+    private val config get() = CobbleworkersConfigHolder.config.scouts
     private val generalConfig = CobbleworkersConfigHolder.config.general
     private val searchRadius get() = generalConfig.searchRadius
     private val searchHeight get() = generalConfig.searchHeight
-    private val useAllStructures get() = config.useAllStructures
 
     override val jobType: JobType = JobType.Scout
     override val blockValidator: ((World, BlockPos) -> Boolean)? = null
@@ -70,6 +69,7 @@ object Scout : Worker {
         val heldItems = heldItemsByPokemon[pokemonId]
 
         // TODO: Add generation cooldown
+
         if (heldItems.isNullOrEmpty()) {
             failedDepositLocations.remove(pokemonId)
             handleGathering(world, origin, pokemonEntity)
@@ -90,15 +90,16 @@ object Scout : Worker {
             ?.let { it.blockPos to it }
     }
 
-    private fun createMap(world: ServerWorld, origin: BlockPos, structureKey: TagKey<Structure>): ItemStack? {
-        val structurePos = world.locateStructure(
-            structureKey,
-            origin,
-            100,
-            true
-        )
+    /**
+     * Locate random structure in already generated chunks and create a map to it.
+     */
+    private fun createStructureMap(world: ServerWorld, origin: BlockPos): ItemStack? {
+        val structures = CobbleworkersCacheManager.getStructures(world, config.useAllStructures, config.structureTags)
+        if (structures.isEmpty()) return null
 
-        if (structurePos == null) return null
+        val selectedId = structures.random()
+        val searchResult = locateStructure(world, selectedId, origin)
+        val structurePos = searchResult?.first ?: return null
 
         val map = FilledMapItem.createMap(
             world,
@@ -123,38 +124,13 @@ object Scout : Worker {
         return map
     }
 
-    /**
-     * Locate random structure in already generated chunks and create a map to it.
-     */
-    private fun createStructureMap(world: ServerWorld, origin: BlockPos): ItemStack? {
-        val structures: Set<Identifier> = if (useAllStructures) {
-            val registryManager = world.server.registryManager
-            val structureRegistry = registryManager.get(RegistryKeys.STRUCTURE)
-            structureRegistry.keys.map { it.value }.toSet()
-        } else {
-            config.structureTags.mapNotNull { Identifier.tryParse(it) }.toSet()
-        }
-
-        if (structures.isEmpty()) return null
-
-        val selectedId = structures.random()
-        val structureKey = TagKey.of(RegistryKeys.STRUCTURE, selectedId)
-
-        return createMap(world, origin, structureKey)
-    }
-
-    private fun locateStructure(world: ServerWorld, structures: Set<Identifier>, pos: BlockPos): Pair<BlockPos?, RegistryEntry<Structure>?>? {
+    private fun locateStructure(world: ServerWorld, structure: Identifier, pos: BlockPos): Pair<BlockPos?, RegistryEntry<Structure>?>? {
         val registryManager = world.server.registryManager
         val structureRegistry = registryManager.get(RegistryKeys.STRUCTURE)
 
-        val entries = structures.mapNotNull { id ->
-            structureRegistry.getEntry(RegistryKey.of(RegistryKeys.STRUCTURE, id)).orElse(null)
-        }
-        if (entries.isEmpty()) return null
-
-        val selectedEntry = entries.random()
-        val entryList = RegistryEntryList.of(selectedEntry)
-
+        val entry = structureRegistry.getEntry(RegistryKey.of(RegistryKeys.STRUCTURE, structure)).orElse(null)
+        if (entry == null) return null
+        val entryList = RegistryEntryList.of(entry)
         val chunkGenerator = world.chunkManager.chunkGenerator
         val pair = chunkGenerator.locateStructure(world, entryList, pos, 100, false)
         val ktPair = Pair(pair?.first, pair?.second)

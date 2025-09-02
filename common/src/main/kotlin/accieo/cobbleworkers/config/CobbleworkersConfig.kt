@@ -309,7 +309,8 @@ class CobbleworkersConfig : ConfigData {
         var scoutsEnabled = true
         var scouts: MutableList<String> = mutableListOf("pikachu")
 
-        var useAllStructures = true
+        var useAllStructures = false
+        var mapNameIsHidden = true
 
         var structureTags: MutableList<String> = mutableListOf(
             "cobblemon:fishing_boat",

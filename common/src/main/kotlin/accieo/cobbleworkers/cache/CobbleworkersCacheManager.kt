@@ -9,10 +9,14 @@
 package accieo.cobbleworkers.cache
 
 import accieo.cobbleworkers.enums.JobType
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 
 object CobbleworkersCacheManager {
     private val pastureCaches: MutableMap<BlockPos, PastureCache> = mutableMapOf()
+    private val structuresCache: MutableSet<Identifier> = mutableSetOf()
 
     /**
      * Adds a target block for the given job type.
@@ -41,5 +45,24 @@ object CobbleworkersCacheManager {
      */
     fun removePasture(pastureOrigin: BlockPos) {
         pastureCaches.remove(pastureOrigin)
+    }
+
+    /**
+     * Gets or builds the server world structures cache.
+     */
+    fun getStructures(world: ServerWorld, useAll: Boolean, tags: List<String>): Set<Identifier> {
+        if (!structuresCache.isEmpty()) return structuresCache
+
+        val registryManager = world.server.registryManager
+        val structureRegistry = registryManager.get(RegistryKeys.STRUCTURE)
+
+        val structures = if (useAll) {
+            structureRegistry.keys.map { it.value }.toSet()
+        } else {
+            tags.mapNotNull { Identifier.tryParse(it) }.toSet()
+        }
+
+        structuresCache.addAll(structures)
+        return structuresCache
     }
 }

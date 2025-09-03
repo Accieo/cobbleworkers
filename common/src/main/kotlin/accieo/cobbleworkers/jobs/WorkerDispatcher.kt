@@ -40,6 +40,7 @@ object WorkerDispatcher {
         MintHarvester,
         NetherwartHarvester,
         PickUpLooter,
+        Scout,
         SnowGenerator,
         TumblestoneHarvester,
         WaterGenerator,

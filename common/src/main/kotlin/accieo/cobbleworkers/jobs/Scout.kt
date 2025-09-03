@@ -8,6 +8,7 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.Cobbleworkers
 import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.enums.JobType
@@ -98,8 +99,9 @@ object Scout : Worker {
         if (structures.isEmpty()) return null
 
         val selectedId = structures.random()
-        val searchResult = locateStructure(world, selectedId, origin)
-        val structurePos = searchResult?.first ?: return null
+        val searchResult = locateStructure(world, selectedId, origin) ?: return null
+        val structurePos = searchResult.first
+        val structureEntry = searchResult.second
 
         val map = FilledMapItem.createMap(
             world,
@@ -117,24 +119,29 @@ object Scout : Worker {
             MapDecorationTypes.RED_X
         )
 
-        // TODO: Config setting to write map destination in name, default off.
-        map.set(DataComponentTypes.CUSTOM_NAME, Text.literal("Scout's map"))
+        val mapKey = if (config.mapNameIsHidden) {
+            Text.of("Scout's map")
+        } else {
+            Text.of(cleanMapName(structureEntry.idAsString))
+        }
+
+        map.set(DataComponentTypes.CUSTOM_NAME, mapKey)
         map.set(DataComponentTypes.MAP_COLOR, MapColorComponent(0xCC84ED))
 
         return map
     }
 
-    private fun locateStructure(world: ServerWorld, structure: Identifier, pos: BlockPos): Pair<BlockPos?, RegistryEntry<Structure>?>? {
-        val registryManager = world.server.registryManager
-        val structureRegistry = registryManager.get(RegistryKeys.STRUCTURE)
+    private fun locateStructure(world: ServerWorld, structure: Identifier, pos: BlockPos): com.mojang.datafixers.util.Pair<BlockPos, RegistryEntry<Structure>>? {
+        val structureRegistry = world.server.registryManager.get(RegistryKeys.STRUCTURE)
 
-        val entry = structureRegistry.getEntry(RegistryKey.of(RegistryKeys.STRUCTURE, structure)).orElse(null)
-        if (entry == null) return null
+        val entry = structureRegistry
+            .getEntry(RegistryKey.of(RegistryKeys.STRUCTURE, structure))
+            .orElse(null) ?: return null
+
         val entryList = RegistryEntryList.of(entry)
+
         val chunkGenerator = world.chunkManager.chunkGenerator
-        val pair = chunkGenerator.locateStructure(world, entryList, pos, 100, false)
-        val ktPair = Pair(pair?.first, pair?.second)
-        return ktPair
+        return chunkGenerator.locateStructure(world, entryList, pos, 100, false)
     }
 
     /**
@@ -190,5 +197,17 @@ object Scout : Worker {
      */
     private fun doesPokemonKnowFly(pokemonEntity: PokemonEntity): Boolean {
         return pokemonEntity.pokemon.moveSet.getMoves().any { it.name == "fly" }
+    }
+
+    /**
+     * Cleans up registry structure names.
+     */
+    private fun cleanMapName(rawName: String): String {
+        return rawName
+            .substringAfterLast(":")
+            .substringAfterLast("/")
+            .replace("_", " ")
+            .split(" ")
+            .joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
     }
 }

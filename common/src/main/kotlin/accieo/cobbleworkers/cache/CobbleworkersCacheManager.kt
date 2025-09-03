@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos
 
 object CobbleworkersCacheManager {
     private val pastureCaches: MutableMap<BlockPos, PastureCache> = mutableMapOf()
-    private val structuresCache: MutableSet<Identifier> = mutableSetOf()
+    private var structuresCache: Set<Identifier>? = null
 
     /**
      * Adds a target block for the given job type.
@@ -51,7 +51,7 @@ object CobbleworkersCacheManager {
      * Gets or builds the server world structures cache.
      */
     fun getStructures(world: ServerWorld, useAll: Boolean, tags: List<String>): Set<Identifier> {
-        if (!structuresCache.isEmpty()) return structuresCache
+        structuresCache?.let { return it }
 
         val registryManager = world.server.registryManager
         val structureRegistry = registryManager.get(RegistryKeys.STRUCTURE)
@@ -62,7 +62,7 @@ object CobbleworkersCacheManager {
             tags.mapNotNull { Identifier.tryParse(it) }.toSet()
         }
 
-        structuresCache.addAll(structures)
-        return structuresCache
+        structuresCache = structures
+        return structures
     }
 }

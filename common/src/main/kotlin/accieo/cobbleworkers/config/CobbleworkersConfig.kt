@@ -309,6 +309,8 @@ class CobbleworkersConfig : ConfigData {
         var scoutsEnabled = true
         var scouts: MutableList<String> = mutableListOf("pikachu")
 
+        var scoutGenerationCooldownSeconds: Long = 80
+
         var useAllStructures = false
         var mapNameIsHidden = true
 

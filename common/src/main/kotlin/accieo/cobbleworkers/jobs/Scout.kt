@@ -8,7 +8,6 @@
 
 package accieo.cobbleworkers.jobs
 
-import accieo.cobbleworkers.Cobbleworkers
 import accieo.cobbleworkers.cache.CobbleworkersCacheManager
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.enums.JobType
@@ -46,6 +45,7 @@ object Scout : Worker {
     private val generalConfig = CobbleworkersConfigHolder.config.general
     private val searchRadius get() = generalConfig.searchRadius
     private val searchHeight get() = generalConfig.searchHeight
+    private val lastGenerationTime = mutableMapOf<UUID, Long>()
 
     override val jobType: JobType = JobType.Scout
     override val blockValidator: ((World, BlockPos) -> Boolean)? = null
@@ -69,7 +69,14 @@ object Scout : Worker {
         val pokemonId = pokemonEntity.pokemon.uuid
         val heldItems = heldItemsByPokemon[pokemonId]
 
-        // TODO: Add generation cooldown
+        // TODO: Throttle server-wide
+
+        val now = world.time
+        val lastTime = lastGenerationTime[pokemonId] ?: 0L
+
+        if (now - lastTime < config.scoutGenerationCooldownSeconds) {
+            return
+        }
 
         if (heldItems.isNullOrEmpty()) {
             failedDepositLocations.remove(pokemonId)

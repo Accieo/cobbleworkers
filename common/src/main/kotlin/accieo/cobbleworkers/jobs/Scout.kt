@@ -67,16 +67,17 @@ object Scout : Worker {
      */
     override fun tick(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
+        val ownerId = pokemonEntity.ownerUuid ?: return
         val heldItems = heldItemsByPokemon[pokemonId]
 
-        // TODO: Throttle server-wide
-
         val now = world.time
-        val lastTime = lastGenerationTime[pokemonId] ?: 0L
+        val lastTime = lastGenerationTime[ownerId] ?: 0L
 
         if (now - lastTime < config.scoutGenerationCooldownSeconds) {
             return
         }
+
+        lastGenerationTime[ownerId] = now
 
         if (heldItems.isNullOrEmpty()) {
             failedDepositLocations.remove(pokemonId)
@@ -102,11 +103,18 @@ object Scout : Worker {
      * Locate random structure in already generated chunks and create a map to it.
      */
     private fun createStructureMap(world: ServerWorld, origin: BlockPos): ItemStack? {
+        val now = world.time
         val structures = CobbleworkersCacheManager.getStructures(world, config.useAllStructures, config.structureTags)
         if (structures.isEmpty()) return null
 
         val selectedId = structures.random()
-        val searchResult = locateStructure(world, selectedId, origin) ?: return null
+        val cached = CobbleworkersCacheManager.getCachedStructure(selectedId, now)
+        val searchResult = cached ?: locateStructure(world, selectedId, origin)?.also {
+            CobbleworkersCacheManager.cacheStructure(selectedId, it, now)
+        }
+
+        if (searchResult == null) return null
+
         val structurePos = searchResult.first
         val structureEntry = searchResult.second
 

@@ -106,6 +106,20 @@
   "text.autoconfig.cobbleworkers.option.brewingStandFuel.typeGeneratesFuel": "Pokémon type that generates brewing stand fuel",
   "text.autoconfig.cobbleworkers.option.extinguisher": "Fire extinguishers",
   "text.autoconfig.cobbleworkers.option.extinguisher.extinguishersEnabled": "Fire extinguishers enabled",
-  "text.autoconfig.cobbleworkers.option.extinguisher.extinguishers": "Fire extinguisher Pokémono",
-  "text.autoconfig.cobbleworkers.option.extinguisher.typeExtinguishesFire": "Pokémon type that extinguishes fire"
+  "text.autoconfig.cobbleworkers.option.extinguisher.extinguishers": "Fire extinguisher Pokémon",
+  "text.autoconfig.cobbleworkers.option.extinguisher.typeExtinguishesFire": "Pokémon type that extinguishes fire",
+  "text.autoconfig.cobbleworkers.option.archeology": "Archeologists",
+  "text.autoconfig.cobbleworkers.option.archeology.archeologistsEnabled": "Archeologists enabled",
+  "text.autoconfig.cobbleworkers.option.archeology.archeologists": "Archeologist Pokémon",
+  "text.autoconfig.cobbleworkers.option.archeology.archeologyLootingCooldownSeconds": "Generation cooldown (in seconds)",
+  "text.autoconfig.cobbleworkers.option.archeology.lootTables": "Archeology loot tables ",
+  "text.autoconfig.cobbleworkers.option.archeology.typeDoesArcheology": "Pokémon type that generates archeology loot",
+  "text.autoconfig.cobbleworkers.option.scouts": "Scouts",
+  "text.autoconfig.cobbleworkers.option.scouts.scoutsEnabled": "Scouts enabled",
+  "text.autoconfig.cobbleworkers.option.scouts.scouts": "Scout Pokémon",
+  "text.autoconfig.cobbleworkers.option.scouts.scoutGenerationCooldownSeconds": "Generation cooldown (in seconds)",
+  "text.autoconfig.cobbleworkers.option.scouts.useAllStructures": "Generate maps for all registered in-game structures",
+  "text.autoconfig.cobbleworkers.option.scouts.mapNameIsHidden": "Structure name is hidden in map item",
+  "text.autoconfig.cobbleworkers.option.scouts.structureTags": "Structure tags",
+  "text.autoconfig.cobbleworkers.option.scouts.typeScouts": "Pokémon type that generates maps"
 }

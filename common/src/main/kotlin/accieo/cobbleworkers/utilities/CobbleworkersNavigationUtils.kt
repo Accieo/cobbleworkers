@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.world.World
+import java.util.PriorityQueue
 import java.util.UUID
 
 /**
@@ -26,6 +27,8 @@ object CobbleworkersNavigationUtils {
     private val pokemonToPlayerTarget = mutableMapOf<UUID, UUID>()
     private val targetedPlayers = mutableMapOf<UUID, Claim>()
     private val recentlyExpiredTargets = mutableMapOf<BlockPos, ExpiredTarget>()
+    private val expiredQueue = PriorityQueue<ExpiredTarget>(compareBy { it.expiryTick })
+    private var lastCleanUpTick = 0L
     private const val CLAIM_TIMEOUT_TICKS = 140L
     private const val EXPIRED_TARGET_TIMEOUT_TICKS = 300L
 
@@ -99,7 +102,9 @@ object CobbleworkersNavigationUtils {
         val releasedTarget = pokemonToTarget.remove(pokemonId)
         if (releasedTarget != null) {
             targetedBlocks.remove(releasedTarget)
-            recentlyExpiredTargets[releasedTarget] = ExpiredTarget(releasedTarget, world.time)
+            val expired = ExpiredTarget(releasedTarget, world.time)
+            recentlyExpiredTargets[releasedTarget] = expired
+            expiredQueue.add(expired)
         }
     }
 
@@ -150,6 +155,10 @@ object CobbleworkersNavigationUtils {
      */
     private fun releaseExpiredClaims(world: World) {
         val now = world.time
+
+        if (now - lastCleanUpTick < 20) return
+        lastCleanUpTick = now
+
         val expiredPokemon = mutableListOf<UUID>()
 
         // Check block claims
@@ -167,7 +176,9 @@ object CobbleworkersNavigationUtils {
             releasePlayerTarget(it)
         }
 
-        recentlyExpiredTargets.entries.removeIf { now - it.value.expiryTick > EXPIRED_TARGET_TIMEOUT_TICKS }
+        while (expiredQueue.isNotEmpty() && now - expiredQueue.peek().expiryTick > EXPIRED_TARGET_TIMEOUT_TICKS) {
+            recentlyExpiredTargets.remove(expiredQueue.poll().pos)
+        }
     }
 
     /**

@@ -28,9 +28,11 @@ object CobbleworkersNavigationUtils {
     private val targetedPlayers = mutableMapOf<UUID, Claim>()
     private val recentlyExpiredTargets = mutableMapOf<BlockPos, ExpiredTarget>()
     private val expiredQueue = PriorityQueue<ExpiredTarget>(compareBy { it.expiryTick })
+    private val lastPathfindTick = mutableMapOf<UUID, Long>()
     private var lastCleanUpTick = 0L
     private const val CLAIM_TIMEOUT_TICKS = 140L
     private const val EXPIRED_TARGET_TIMEOUT_TICKS = 300L
+    private const val PATHFIND_INTERVAL_TICKS = 20L
 
     /**
      * Checks if the Pokémon's bounding box intersects with the target block area.
@@ -52,6 +54,14 @@ object CobbleworkersNavigationUtils {
      * Commands the Pokémon entity to move towards the target destination.
      */
     fun navigateTo(pokemonEntity: PokemonEntity, targetPos: BlockPos, speed: Double = 1.0) {
+        val world = pokemonEntity.world
+        val now = world.time
+        val id = pokemonEntity.pokemon.uuid
+        val last = lastPathfindTick[id] ?: 0L
+
+        if (now - last < PATHFIND_INTERVAL_TICKS) return
+        lastPathfindTick[id] = now
+
         pokemonEntity.navigation.startMovingTo(
             targetPos.x + 0.5,
             targetPos.y.toDouble(),

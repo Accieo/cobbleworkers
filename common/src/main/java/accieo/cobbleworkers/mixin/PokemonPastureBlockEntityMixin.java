@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Mixin(PokemonPastureBlockEntity.class)
 public class PokemonPastureBlockEntityMixin {
-	@Inject(at = @At("TAIL"), method = "TICKER$lambda$14")
+	@Inject(at = @At("TAIL"), method = "TICKER$lambda$0")
 	private static void init(World world, BlockPos blockPos, BlockState blockState, PokemonPastureBlockEntity pastureBlock, CallbackInfo ci) {
 		if (world.isClient) return;
 

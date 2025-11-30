@@ -8,6 +8,10 @@
 
 Cobbleworkers is a companion server-side mod for Cobblemon that turns the **Pasture Block** into a powerful utility block.
 
+## Documentation
+
+Documentation is available [here](https://docs.accieo.com/cobbleworkers).
+
 ## Features
 
 ![cobbleworkers-infographic](/common/src/main/resources/assets/cobbleworkers/infographic/infographic.png)

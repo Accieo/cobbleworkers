@@ -12,6 +12,7 @@ import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
+import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
@@ -22,6 +23,15 @@ import net.minecraft.world.World
 
 object Healer : Worker {
     private val VALID_SPECIES: Set<String> = setOf("happiny", "chansey", "blissey")
+    private val VALID_TRANSLATED_SPECIES by lazy {
+        VALID_SPECIES.map { name ->
+            PokemonSpecies.getByName(name)
+                ?.translatedName
+                ?.string
+                ?.lowercase()
+                ?: name.lowercase()
+        }.toSet()
+    }
     private val config = CobbleworkersConfigHolder.config.healing
     private val generalConfig = CobbleworkersConfigHolder.config.general
     private val searchRadius get() = generalConfig.searchRadius
@@ -109,7 +119,7 @@ object Healer : Worker {
     private fun isAllowedBySpecies(pokemonEntity: PokemonEntity): Boolean {
         if (!config.chanseyLineHealsPlayers) return false
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
-        return speciesName in VALID_SPECIES
+        return speciesName in VALID_TRANSLATED_SPECIES
     }
 
     /**

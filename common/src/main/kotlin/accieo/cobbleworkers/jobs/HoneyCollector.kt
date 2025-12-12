@@ -15,6 +15,7 @@ import accieo.cobbleworkers.interfaces.Worker
 import accieo.cobbleworkers.utilities.CobbleworkersInventoryUtils
 import accieo.cobbleworkers.utilities.CobbleworkersNavigationUtils
 import accieo.cobbleworkers.utilities.CobbleworkersTypeUtils
+import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.BeehiveBlock
 import net.minecraft.block.Block
@@ -30,6 +31,15 @@ import java.util.UUID
  */
 object HoneyCollector : Worker {
     private val VALID_SPECIES: Set<String> = setOf("combee", "vespiquen")
+    private val VALID_TRANSLATED_SPECIES by lazy {
+        VALID_SPECIES.map { name ->
+            PokemonSpecies.getByName(name)
+                ?.translatedName
+                ?.string
+                ?.lowercase()
+                ?: name.lowercase()
+        }.toSet()
+    }
     private val heldItemsByPokemon = mutableMapOf<UUID, List<ItemStack>>()
     private val failedDepositLocations = mutableMapOf<UUID, MutableSet<BlockPos>>()
     private val config = CobbleworkersConfigHolder.config.honey
@@ -171,7 +181,7 @@ object HoneyCollector : Worker {
     private fun isAllowedBySpecies(pokemonEntity: PokemonEntity): Boolean {
         if (!config.combeeLineCollectsHoney) return false
         val speciesName = pokemonEntity.pokemon.species.translatedName.string.lowercase()
-        return speciesName in VALID_SPECIES
+        return speciesName in VALID_TRANSLATED_SPECIES
     }
 
     /**

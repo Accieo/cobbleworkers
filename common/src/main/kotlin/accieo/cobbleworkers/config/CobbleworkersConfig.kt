@@ -95,7 +95,7 @@ class CobbleworkersConfig : ConfigData {
 
     class ApricornGroup {
         var apricornHarvestersEnabled = true
-        var apricornHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var apricornHarvesters: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsApricorns: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.BUG
@@ -103,7 +103,7 @@ class CobbleworkersConfig : ConfigData {
 
     class IrrigationGroup {
         var cropIrrigatorsEnabled = true
-        var cropIrrigators: MutableList<String> = mutableListOf("pikachu")
+        var cropIrrigators: MutableList<String> = mutableListOf("ditto")
         var irrigationRadius = 1
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -112,7 +112,7 @@ class CobbleworkersConfig : ConfigData {
 
     class AmethystGroup {
         var amethystHarvestersEnabled = true
-        var amethystHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var amethystHarvesters: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsAmethyst: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.ROCK
@@ -120,7 +120,7 @@ class CobbleworkersConfig : ConfigData {
 
     class TumblestoneGroup {
         var tumblestoneHarvestersEnabled = true
-        var tumblestoneHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var tumblestoneHarvesters: MutableList<String> = mutableListOf("ditto")
         var shouldReplantTumblestone = true
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -129,7 +129,7 @@ class CobbleworkersConfig : ConfigData {
 
     class CropHarvestGroup {
         var cropHarvestersEnabled = true
-        var cropHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var cropHarvesters: MutableList<String> = mutableListOf("ditto")
         var shouldReplantCrops = true
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -138,7 +138,7 @@ class CobbleworkersConfig : ConfigData {
 
     class BerriesGroup {
         var berryHarvestersEnabled = true
-        var berryHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var berryHarvesters: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsBerries: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.GRASS
@@ -147,7 +147,7 @@ class CobbleworkersConfig : ConfigData {
     class HoneyGroup {
         var honeyCollectorsEnabled = true
         var combeeLineCollectsHoney = true
-        var honeyCollectors: MutableList<String> = mutableListOf("pikachu")
+        var honeyCollectors: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsHoney: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.NONE
@@ -158,7 +158,7 @@ class CobbleworkersConfig : ConfigData {
 
     class MintsGroup {
         var mintHarvestersEnabled = true
-        var mintHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var mintHarvesters: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeHarvestsMints: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.FAIRY
@@ -166,7 +166,7 @@ class CobbleworkersConfig : ConfigData {
 
     class LavaGroup {
         var lavaGeneratorsEnabled = true
-        var lavaGenerators: MutableList<String> = mutableListOf("pikachu")
+        var lavaGenerators: MutableList<String> = mutableListOf("ditto")
         var lavaGenerationCooldownSeconds: Long = 90
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -175,7 +175,7 @@ class CobbleworkersConfig : ConfigData {
 
     class WaterGroup {
         var waterGeneratorsEnabled = true
-        var waterGenerators: MutableList<String> = mutableListOf("pikachu")
+        var waterGenerators: MutableList<String> = mutableListOf("ditto")
         var waterGenerationCooldownSeconds: Long = 90
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -184,7 +184,7 @@ class CobbleworkersConfig : ConfigData {
 
     class SnowGroup {
         var snowGeneratorsEnabled = true
-        var snowGenerators: MutableList<String> = mutableListOf("pikachu")
+        var snowGenerators: MutableList<String> = mutableListOf("ditto")
         var snowGenerationCooldownSeconds: Long = 90
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -193,7 +193,7 @@ class CobbleworkersConfig : ConfigData {
 
     class FishingGroup {
         var fishingLootGeneratorsEnabled = true
-        var fishingLootGenerators: MutableList<String> = mutableListOf("pikachu")
+        var fishingLootGenerators: MutableList<String> = mutableListOf("ditto")
         var fishingLootGenerationCooldownSeconds: Long = 60
         var fishingLootTreasureChance = 1
 
@@ -226,7 +226,7 @@ class CobbleworkersConfig : ConfigData {
 
     class GroundItemGathererGroup {
         var groundItemGatheringEnabled = true
-        var groundItemGatherers: MutableList<String> = mutableListOf("pikachu")
+        var groundItemGatherers: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeGathersGroundItems: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.PSYCHIC
@@ -234,7 +234,7 @@ class CobbleworkersConfig : ConfigData {
 
     class NetherwartGroup {
         var netherwartHarvestersEnabled = true
-        var netherwartHarvesters: MutableList<String> = mutableListOf("pikachu")
+        var netherwartHarvesters: MutableList<String> = mutableListOf("ditto")
         var shouldReplantNetherwart = true
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
@@ -243,7 +243,7 @@ class CobbleworkersConfig : ConfigData {
 
     class HealingGroup {
         var healersEnabled = true
-        var healers: MutableList<String> = mutableListOf("pikachu")
+        var healers: MutableList<String> = mutableListOf("ditto")
         var healingMoves: MutableList<String> = mutableListOf(
             "wish",
             "softboiled",
@@ -265,7 +265,7 @@ class CobbleworkersConfig : ConfigData {
 
     class FuelGroup {
         var fuelGeneratorsEnabled = true
-        var fuelGenerators: MutableList<String> = mutableListOf("pikachu")
+        var fuelGenerators: MutableList<String> = mutableListOf("ditto")
         var fuelGenerationCooldownSeconds: Long = 80
         var burnTimeSeconds = 80
 
@@ -275,7 +275,7 @@ class CobbleworkersConfig : ConfigData {
 
     class BrewingStandFuelGroup {
         var fuelGeneratorsEnabled = true
-        var fuelGenerators: MutableList<String> = mutableListOf("pikachu")
+        var fuelGenerators: MutableList<String> = mutableListOf("ditto")
         var fuelGenerationCooldownSeconds: Long = 80
         @ConfigEntry.BoundedDiscrete(min = 1, max = 20)
         var addedFuel = 5
@@ -286,7 +286,7 @@ class CobbleworkersConfig : ConfigData {
 
     class ExtinguisherGroup {
         var extinguishersEnabled = true
-        var extinguishers: MutableList<String> = mutableListOf("pikachu")
+        var extinguishers: MutableList<String> = mutableListOf("ditto")
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeExtinguishesFire: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER
@@ -294,7 +294,7 @@ class CobbleworkersConfig : ConfigData {
 
     class ArcheologyGroup {
         var archeologistsEnabled = true
-        var archeologists: MutableList<String> = mutableListOf("pikachu")
+        var archeologists: MutableList<String> = mutableListOf("ditto")
 
         var archeologyLootingCooldownSeconds: Long = 80
 
@@ -308,7 +308,7 @@ class CobbleworkersConfig : ConfigData {
 
     class ScoutGroup {
         var scoutsEnabled = true
-        var scouts: MutableList<String> = mutableListOf("pikachu")
+        var scouts: MutableList<String> = mutableListOf("ditto")
 
         var scoutGenerationCooldownSeconds: Long = 80
 

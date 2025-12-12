@@ -65,13 +65,31 @@ object CropIrrigator : Worker {
         }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget, 1.5)) {
-            val farmland = world.getBlockState(currentTarget)
-            world.setBlockState(
-               currentTarget,
-               farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
-               Block.NOTIFY_LISTENERS
-            )
+            irrigateFarmland(world, currentTarget, config.irrigationRadius)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
+        }
+    }
+
+    /**
+     * Handle irrigation processing, including finding neighboring farmland to
+     * irrigate in a wider radius.
+     */
+    private fun irrigateFarmland(world: World, blockPos: BlockPos, radius: Int = 1) {
+        val farmland = world.getBlockState(blockPos)
+        val blocks = BlockPos.iterate(
+            blockPos.add(-radius, 0, -radius),
+            blockPos.add(radius, 0, radius)
+        )
+
+        blocks.forEach { it ->
+            val blockState = world.getBlockState(it)
+            if (blockState.block == Blocks.FARMLAND) {
+                world.setBlockState(
+                    it,
+                    farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
+                    Block.NOTIFY_LISTENERS
+                )
+            }
         }
     }
 

@@ -12,6 +12,7 @@
   "text.autoconfig.cobbleworkers.option.irrigation": "Crop irrigation",
   "text.autoconfig.cobbleworkers.option.irrigation.cropIrrigatorsEnabled": "Crop irrigators enabled",
   "text.autoconfig.cobbleworkers.option.irrigation.waterTypeIrrigatesCrops": "Water type irrigates crops",
+  "text.autoconfig.cobbleworkers.option.irrigation.irrigationRadius": "Irrigation radius",
   "text.autoconfig.cobbleworkers.option.irrigation.cropIrrigators": "Crop irrigator Pokémon",
   "text.autoconfig.cobbleworkers.option.irrigation.typeIrrigatesCrops": "Pokémon type that irrigates crops",
   "text.autoconfig.cobbleworkers.option.amethyst": "Amethyst harvesting",

@@ -104,6 +104,7 @@ class CobbleworkersConfig : ConfigData {
     class IrrigationGroup {
         var cropIrrigatorsEnabled = true
         var cropIrrigators: MutableList<String> = mutableListOf("pikachu")
+        var irrigationRadius = 1
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeIrrigatesCrops: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER

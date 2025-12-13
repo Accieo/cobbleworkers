@@ -15,7 +15,9 @@ import accieo.cobbleworkers.integration.FarmersDelightBlocks
 import accieo.cobbleworkers.jobs.CropHarvester
 import accieo.cobbleworkers.jobs.CropIrrigator
 import com.cobblemon.mod.common.CobblemonBlocks
+import com.cobblemon.mod.common.block.HeartyGrainsBlock
 import com.cobblemon.mod.common.block.MedicinalLeekBlock
+import com.cobblemon.mod.common.block.NutBushBlock
 import com.cobblemon.mod.common.block.RevivalHerbBlock
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.block.BeetrootsBlock
@@ -52,7 +54,9 @@ object CobbleworkersCropUtils {
         Blocks.CAVE_VINES_PLANT,
         CobblemonBlocks.REVIVAL_HERB,
         CobblemonBlocks.MEDICINAL_LEEK,
-        CobblemonBlocks.VIVICHOKE_SEEDS
+        CobblemonBlocks.VIVICHOKE_SEEDS,
+        CobblemonBlocks.HEARTY_GRAINS,
+        CobblemonBlocks.GALARICA_NUT_BUSH
     )
 
     /**
@@ -119,6 +123,26 @@ object CobbleworkersCropUtils {
         val isRice = blockId == FarmersDelightBlocks.RICE_PANICLES
         val isMushroomColony = blockId in FarmersDelightBlocks.MUSHROOMS
 
+        // TODO: Clean this whole function
+        // This is super ugly, but it's a multi-block crop...
+        if (block == CobblemonBlocks.HEARTY_GRAINS) {
+            val belowPos = blockPos.down()
+            val belowState = world.getBlockState(belowPos)
+
+            world.setBlockState(
+                belowPos,
+                belowState.with(
+                    HeartyGrainsBlock.AGE,
+                    HeartyGrainsBlock.AGE_AFTER_HARVEST
+                ),
+                Block.NOTIFY_LISTENERS
+            )
+
+            world.setBlockState(blockPos, Blocks.AIR.defaultState, Block.NOTIFY_LISTENERS)
+
+            return
+        }
+
         val newState = when {
             config.shouldReplantCrops ->
                 when {
@@ -138,12 +162,14 @@ object CobbleworkersCropUtils {
                     /** Cobblemon **/
                     block == CobblemonBlocks.REVIVAL_HERB -> blockState.with(RevivalHerbBlock.AGE, RevivalHerbBlock.MIN_AGE)
                     block == CobblemonBlocks.MEDICINAL_LEEK -> blockState.with(MedicinalLeekBlock.AGE, 0)
-                    block == CobblemonBlocks.VIVICHOKE_SEEDS -> Blocks.AIR.defaultState
+                    block == CobblemonBlocks.VIVICHOKE_SEEDS -> blockState.with(CropBlock.AGE, 0)
+                    block == CobblemonBlocks.GALARICA_NUT_BUSH -> blockState.with(NutBushBlock.AGE, 1)
                     else -> return
                 }
             block == Blocks.SWEET_BERRY_BUSH -> blockState.with(SweetBerryBushBlock.AGE, 1)
             block == Blocks.CAVE_VINES -> blockState.with(CaveVinesBodyBlock.BERRIES, false)
             block == Blocks.CAVE_VINES_PLANT -> blockState.with(CaveVinesBodyBlock.BERRIES, false)
+            block == CobblemonBlocks.GALARICA_NUT_BUSH -> blockState.with(NutBushBlock.AGE, 1)
             else -> Blocks.AIR.defaultState
         }
 
@@ -159,9 +185,11 @@ object CobbleworkersCropUtils {
         val blockId = Registries.BLOCK.getId(block).path
 
         return when {
+            block is HeartyGrainsBlock -> block.getAge(state) == HeartyGrainsBlock.MATURE_AGE
             block is CropBlock -> block.getAge(state) == block.maxAge
             block is CaveVines -> state.get(CaveVinesBodyBlock.BERRIES)
             block is SweetBerryBushBlock -> state.get(SweetBerryBushBlock.AGE) == SweetBerryBushBlock.MAX_AGE
+            block is NutBushBlock -> state.get(NutBushBlock.AGE) == NutBushBlock.MAX_AGE
             blockId in FarmersDelightBlocks.MUSHROOMS && state.contains(AGE_3) -> state.get(AGE_3) == 3
             else -> false
         }

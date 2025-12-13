@@ -67,8 +67,29 @@ object FireExtinguisher : Worker {
         }
 
         if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, currentTarget)) {
-            world.setBlockState(closestFire, Blocks.AIR.defaultState)
+            extinguishFire(world, currentTarget, config.extinguishingRadius)
             CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
+        }
+    }
+
+    /**
+     * Handle the fire extinguishing process, including finding neighboring fire blocks
+     * to destroying them in a wider radius.
+     */
+    private fun extinguishFire(world: World, blockPos: BlockPos, radius: Int = 1) {
+        val blocks = BlockPos.iterate(
+            blockPos.add(-radius, 0, -radius),
+            blockPos.add(radius, 0, radius)
+        )
+
+        blocks.forEach { it ->
+            val blockState = world.getBlockState(it)
+            if (blockState.block == Blocks.FIRE) {
+                world.setBlockState(
+                    it,
+                    Blocks.AIR.defaultState
+                )
+            }
         }
     }
 

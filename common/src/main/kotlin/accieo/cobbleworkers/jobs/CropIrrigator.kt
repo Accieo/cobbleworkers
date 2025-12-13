@@ -75,7 +75,6 @@ object CropIrrigator : Worker {
      * irrigate in a wider radius.
      */
     private fun irrigateFarmland(world: World, blockPos: BlockPos, radius: Int = 1) {
-        val farmland = world.getBlockState(blockPos)
         val blocks = BlockPos.iterate(
             blockPos.add(-radius, 0, -radius),
             blockPos.add(radius, 0, radius)
@@ -86,7 +85,7 @@ object CropIrrigator : Worker {
             if (blockState.block == Blocks.FARMLAND) {
                 world.setBlockState(
                     it,
-                    farmland.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
+                    blockState.with(FarmlandBlock.MOISTURE, FarmlandBlock.MAX_MOISTURE),
                     Block.NOTIFY_LISTENERS
                 )
             }

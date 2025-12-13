@@ -287,6 +287,7 @@ class CobbleworkersConfig : ConfigData {
     class ExtinguisherGroup {
         var extinguishersEnabled = true
         var extinguishers: MutableList<String> = mutableListOf("ditto")
+        var extinguishingRadius = 1
 
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
         var typeExtinguishesFire: CobbleworkersConfigPokemonType = CobbleworkersConfigPokemonType.WATER

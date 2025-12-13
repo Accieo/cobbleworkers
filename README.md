@@ -10,13 +10,7 @@ Cobbleworkers is a companion server-side mod for Cobblemon that turns the **Past
 
 ## Documentation
 
-Documentation is available [here](https://docs.accieo.com/cobbleworkers).
-
-## Features
-
-![cobbleworkers-infographic](/common/src/main/resources/assets/cobbleworkers/infographic/infographic.png)
-
-Pokémon will automatically place all of the items in inventories nearby!
+Visit the documentation to get an overview of the mod [here](https://docs.accieo.com/cobbleworkers).
 
 ## Configuration
 Each job can be customized via a config file. Enable/disable job types and specify which Pokémon can perform them.

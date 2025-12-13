@@ -109,6 +109,7 @@
   "text.autoconfig.cobbleworkers.option.extinguisher.extinguishersEnabled": "Fire extinguishers enabled",
   "text.autoconfig.cobbleworkers.option.extinguisher.extinguishers": "Fire extinguisher Pokémon",
   "text.autoconfig.cobbleworkers.option.extinguisher.typeExtinguishesFire": "Pokémon type that extinguishes fire",
+  "text.autoconfig.cobbleworkers.option.extinguisher.extinguishingRadius": "Extinguishing radius",
   "text.autoconfig.cobbleworkers.option.archeology": "Archeologists",
   "text.autoconfig.cobbleworkers.option.archeology.archeologistsEnabled": "Archeologists enabled",
   "text.autoconfig.cobbleworkers.option.archeology.archeologists": "Archeologist Pokémon",

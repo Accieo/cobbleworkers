@@ -1,5 +1,6 @@
-Base mod:
-Ground types harvest archeology related items
-
-Integration:
--
+- Fixed an issue with combee evolution line not generating honey if game was in a different language.
+- By default, irrigators now irrigate a 3x3 area (9 blocks). This setting is configurable.
+- By default, fire extinguishers now extinguish a 3x3 area (9 blocks). This setting is configurable.
+- By default, Ditto will now handle all jobs instead of Pikachu. (Old configs will keep Pikachu)
+- Vivichoke is now replanted.
+- Added support for hearty grains and galarica nut bush.

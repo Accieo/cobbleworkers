@@ -12,6 +12,7 @@ import accieo.cobbleworkers.Cobbleworkers;
 import accieo.cobbleworkers.cache.CobbleworkersCacheManager;
 import accieo.cobbleworkers.jobs.WorkerDispatcher;
 import com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity;
+import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import net.minecraft.block.BlockState;
@@ -51,6 +52,9 @@ public class PokemonPastureBlockEntityMixin {
 
 					PokemonEntity pokemonEntity = pokemon.getEntity();
 					if (pokemonEntity == null) return;
+
+					PoseType poseType = pokemonEntity.getDataTracker().get(PokemonEntity.getPOSE_TYPE());
+					if (poseType == PoseType.SLEEP) return;
 
 					try {
 						WorkerDispatcher.INSTANCE.tickPokemon(world, blockPos, pokemonEntity);

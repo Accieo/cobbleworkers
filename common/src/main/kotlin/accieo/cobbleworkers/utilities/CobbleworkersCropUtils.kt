@@ -98,6 +98,7 @@ object CobbleworkersCropUtils {
     /**
      * Executes the complete harvesting processes for a single crop
      */
+    // TODO: Clean this whole function
     fun harvestCrop(world: World, blockPos: BlockPos, pokemonEntity: PokemonEntity, pokemonHeldItems:  MutableMap<UUID, List<ItemStack>>, config: CobbleworkersConfig.CropHarvestGroup) {
         val blockState = world.getBlockState(blockPos)
         if (blockState.block !in validCropBlocks) return
@@ -123,23 +124,12 @@ object CobbleworkersCropUtils {
         val isRice = blockId == FarmersDelightBlocks.RICE_PANICLES
         val isMushroomColony = blockId in FarmersDelightBlocks.MUSHROOMS
 
-        // TODO: Clean this whole function
-        // This is super ugly, but it's a multi-block crop...
         if (block == CobblemonBlocks.HEARTY_GRAINS) {
             val belowPos = blockPos.down()
             val belowState = world.getBlockState(belowPos)
-
-            world.setBlockState(
-                belowPos,
-                belowState.with(
-                    HeartyGrainsBlock.AGE,
-                    HeartyGrainsBlock.AGE_AFTER_HARVEST
-                ),
-                Block.NOTIFY_LISTENERS
-            )
-
-            world.setBlockState(blockPos, Blocks.AIR.defaultState, Block.NOTIFY_LISTENERS)
-
+            if (belowState.block == CobblemonBlocks.HEARTY_GRAINS) {
+                world.setBlockState(blockPos, Blocks.AIR.defaultState, Block.NOTIFY_LISTENERS)
+            }
             return
         }
 

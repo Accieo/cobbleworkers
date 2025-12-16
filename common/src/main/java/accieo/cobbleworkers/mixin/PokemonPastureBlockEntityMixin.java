@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Objects;
+import java.util.List;
 
 @Mixin(PokemonPastureBlockEntity.class)
 public class PokemonPastureBlockEntityMixin {
@@ -37,31 +37,32 @@ public class PokemonPastureBlockEntityMixin {
 			Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher tickAreaScan", e);
 		}
 
-		pastureBlock.getTetheredPokemon().stream()
-				.filter(Objects::nonNull)
-				.forEach(tethering -> {
-					Pokemon pokemon;
-					try {
-						pokemon = tethering.getPokemon();
-					} catch (Exception e)  {
-						Cobbleworkers.LOGGER.error("[Cobbleworkers] - Failed to get Pokémon from tethering: {}", e.getMessage());
-						return;
-					}
+		List<PokemonPastureBlockEntity.Tethering> tetheredPokemon = pastureBlock.getTetheredPokemon();
+        for (PokemonPastureBlockEntity.Tethering tethering : tetheredPokemon) {
+            if (tethering == null) continue;
 
-					if (pokemon == null || pokemon.isFainted()) return;
+            Pokemon pokemon;
+            try {
+                pokemon = tethering.getPokemon();
+            } catch (Exception e) {
+                Cobbleworkers.LOGGER.error("[Cobbleworkers] - Failed to get Pokémon from tethering: {}", e.getMessage());
+                continue;
+            }
 
-					PokemonEntity pokemonEntity = pokemon.getEntity();
-					if (pokemonEntity == null) return;
+            if (pokemon == null || pokemon.isFainted()) continue;
 
-					PoseType poseType = pokemonEntity.getDataTracker().get(PokemonEntity.getPOSE_TYPE());
-					if (poseType == PoseType.SLEEP) return;
+            PokemonEntity pokemonEntity = pokemon.getEntity();
+            if (pokemonEntity == null) continue;
 
-					try {
-						WorkerDispatcher.INSTANCE.tickPokemon(world, blockPos, pokemonEntity);
-					} catch (Exception e) {
-						Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher.tickPokemon {}", e.getMessage());
-					}
-				});
+            PoseType poseType = pokemonEntity.getDataTracker().get(PokemonEntity.getPOSE_TYPE());
+            if (poseType == PoseType.SLEEP) continue;
+
+            try {
+                WorkerDispatcher.INSTANCE.tickPokemon(world, blockPos, pokemonEntity);
+            } catch (Exception e) {
+                Cobbleworkers.LOGGER.error("[Cobbleworkers] - Error processing WorkerDispatcher.tickPokemon {}", e.getMessage());
+            }
+        }
 	}
 
 	@Inject(method = "onBroken()V", at = @At("TAIL"), remap = false)

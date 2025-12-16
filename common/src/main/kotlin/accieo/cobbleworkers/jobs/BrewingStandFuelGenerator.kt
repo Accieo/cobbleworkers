@@ -77,7 +77,7 @@ object BrewingStandFuelGenerator : Worker {
      */
     private fun handleFuelGeneration(world: World, origin: BlockPos, pokemonEntity: PokemonEntity) {
         val pokemonId = pokemonEntity.pokemon.uuid
-        val closestFurnace = findClosestBrewingStand(world, origin) ?: return
+        val closestBrewingStand = findClosestBrewingStand(world, origin) ?: return
 
         val now = world.time
         val lastTime = lastGenerationTime[pokemonId] ?: 0L
@@ -89,18 +89,18 @@ object BrewingStandFuelGenerator : Worker {
         val currentTarget = CobbleworkersNavigationUtils.getTarget(pokemonId, world)
 
         if (currentTarget == null) {
-            if (!CobbleworkersNavigationUtils.isTargeted(closestFurnace, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestFurnace, world)) {
-                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestFurnace, world)
+            if (!CobbleworkersNavigationUtils.isTargeted(closestBrewingStand, world) && !CobbleworkersNavigationUtils.isRecentlyExpired(closestBrewingStand, world)) {
+                CobbleworkersNavigationUtils.claimTarget(pokemonId, closestBrewingStand, world)
             }
             return
         }
 
-        if (currentTarget == closestFurnace) {
-            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestFurnace)
+        if (currentTarget == closestBrewingStand) {
+            CobbleworkersNavigationUtils.navigateTo(pokemonEntity, closestBrewingStand)
         }
 
-        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestFurnace)) {
-            addBurnTime(world, closestFurnace)
+        if (CobbleworkersNavigationUtils.isPokemonAtPosition(pokemonEntity, closestBrewingStand)) {
+            addBurnTime(world, closestBrewingStand)
             lastGenerationTime[pokemonId] = now
             CobbleworkersNavigationUtils.releaseTarget(pokemonId, world)
         }

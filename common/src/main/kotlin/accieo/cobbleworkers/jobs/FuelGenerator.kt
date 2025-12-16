@@ -63,7 +63,9 @@ object FuelGenerator : Worker {
         return possibleTargets
             .filter { pos ->
                 val state = world.getBlockState(pos)
+                val blockEntity = world.getBlockEntity(pos) as? AbstractFurnaceBlockEntity ?: return@filter false
                 blockValidator(world, pos)
+                        && !blockEntity.getStack(0).isEmpty
                         && !state.get(AbstractFurnaceBlock.LIT)
                         && !CobbleworkersNavigationUtils.isRecentlyExpired(pos, world)
             }

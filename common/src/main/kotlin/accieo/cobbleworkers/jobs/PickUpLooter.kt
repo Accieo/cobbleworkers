@@ -8,6 +8,7 @@
 
 package accieo.cobbleworkers.jobs
 
+import accieo.cobbleworkers.Cobbleworkers
 import accieo.cobbleworkers.config.CobbleworkersConfigHolder
 import accieo.cobbleworkers.enums.JobType
 import accieo.cobbleworkers.interfaces.Worker
@@ -35,13 +36,13 @@ object PickUpLooter : Worker {
     override val jobType: JobType = JobType.PickUpLooter
     override val blockValidator: ((World, BlockPos) -> Boolean)? = null
 
+
     /**
      * Determines if Pokémon is eligible to be a worker.
      * NOTE: This is used to prevent running the tick method unnecessarily.
      */
     override fun shouldRun(pokemonEntity: PokemonEntity): Boolean {
         if (!config.pickUpLootersEnabled) return false
-
         return pokemonEntity.pokemon.ability.name == "pickup"
     }
 
@@ -80,9 +81,13 @@ object PickUpLooter : Worker {
 
         val lootTables = config.lootTables.mapNotNull { Identifier.tryParse(it) }
 
-        if (lootTables.isEmpty()) return
+        if (lootTables.isEmpty()) {
+            Cobbleworkers.LOGGER.warn("[PickUpLooter] No valid loot tables configured!")
+            return
+        }
 
         val selectedId = lootTables.random()
+        Cobbleworkers.LOGGER.info("[PickUpLooter] Selected loot table: $selectedId at $origin")
 
         val lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, selectedId)
         val lootTable = world.server.reloadableRegistries.getLootTable(lootTableKey)
@@ -91,6 +96,9 @@ object PickUpLooter : Worker {
         if (drops.isNotEmpty()) {
             lastGenerationTime[pokemonId] = now
             heldItemsByPokemon[pokemonId] = drops
+            Cobbleworkers.LOGGER.info("[PickUpLooter] Generated ${drops.size} items: ${drops.joinToString { "${it.item}" }}")
+        } else {
+            Cobbleworkers.LOGGER.debug("[PickUpLooter] No drops from table: $selectedId")
         }
     }
 }

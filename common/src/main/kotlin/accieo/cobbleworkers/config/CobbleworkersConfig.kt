@@ -205,6 +205,7 @@ class CobbleworkersConfig : ConfigData {
         var pickUpLootersEnabled = true
         var pickUpLootingCooldownSeconds: Long = 120
         var lootTables: MutableList<String> = mutableListOf(
+            "cobbleworkers:pickup_treasure",
             "cobblemon:sets/any_ancient_held_item",
             "cobblemon:sets/any_common_pokeball",
             "cobblemon:sets/any_evo_stone",

@@ -20,3 +20,25 @@ when using the minecraft integrated server, for servers use the config file.
 
 ## License
 Licensed under [MPL-2.0](https://mozilla.org/MPL/2.0/)
+
+## Notice
+
+This repository contains the **last open-source release** of Cobbleworkers under MPL-2.0.
+
+Development has continued privately, and the current version (including datapack-based job creation)
+is **closed source for the time being**. It may be open-sourced again in the future.
+
+### Scope of this repository
+
+- This codebase is **no longer actively developed**
+- It is kept available for reference and for users running this version
+
+### Issues
+- Issues remain open for:
+  - general feedback
+  - new closed source version (datapack-based job creation)
+
+### Contributions
+
+- Pull requests are **not being accepted** at this time
+- Users are welcome to fork and maintain their own versions under MPL-2.0
